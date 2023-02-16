@@ -24,20 +24,20 @@ const singleList = ref(new Array(200).fill(0))
     <el-button @click="handle">
       是否使用单例模式
     </el-button>
-    {{ useV }}
+    {{ useV }}<br>
     <template v-if="useV">
+      单选：
       <div class="flex">
-        单选：
         <VSelect v-for="(item, idx) in singleList" :key="idx" v-model="singleList[idx]" :ops-data="opsData" />
       </div>
+      多选：
       <div class="flex">
-        多选：
         <VSelect v-for="(item, idx) in multipleList" :key="idx" v-model="multipleList[idx]" multiple :ops-data="opsData" />
       </div>
     </template>
     <template v-else>
+      单选：
       <div class="flex">
-        单选：
         <ElSelect v-for="(item, idx) in singleList" :key="idx" v-model="singleList[idx]">
           <ElOption
             v-for="op in opsData"
@@ -47,8 +47,8 @@ const singleList = ref(new Array(200).fill(0))
           />
         </ElSelect>
       </div>
+      多选：
       <div class="flex">
-        多选：
         <ElSelect v-for="(item, idx) in multipleList" :key="idx" v-model="multipleList[idx]" multiple>
           <ElOption
             v-for="op in opsData"
