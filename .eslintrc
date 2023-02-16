@@ -12,6 +12,7 @@
         "vue/html-self-closing": "off",
         
         "dot-notation": "off",
-        "vue/dot-notation": "off"
+        "vue/dot-notation": "off",
+        "prefer-promise-reject-errors": "off"
     }
 }

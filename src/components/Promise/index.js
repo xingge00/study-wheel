@@ -3,7 +3,8 @@ class MyPromise {
     let index = 0
     const resArr = []
     return new Promise((resolve, reject) => {
-      if (!Array.isArray(arr) || arr.length === 0) return undefined
+      if (!Array.isArray(arr)) return reject(new Error('需要传入数组'))
+      if (arr.length === 0) return resolve([])
       for (const idx in arr) {
         const cur = arr[idx]
         if (!(cur instanceof Promise)) {
@@ -26,10 +27,9 @@ class MyPromise {
 
     return new Promise((resolve, reject) => {
       for (const idx in arr) {
-        const cur = arr[idx]
+        let cur = arr[idx]
         if (!(cur instanceof Promise)) {
-          resolve(cur)
-          break
+          cur = Promise.resolve(cur)
         }
         cur.then((res) => {
           resolve(res)
@@ -41,14 +41,10 @@ class MyPromise {
   }
 }
 const p0 = new Promise((resolve) => {
-  setTimeout(() => {
-    resolve('resolve')
-  }, 1000)
+  resolve('resolve')
 })
 
-const p1 = new Promise((resolve) => {
-  resolve('成功了')
-})
+const p1 = 1
 
 const p2 = new Promise((resolve) => {
   setTimeout(() => {
@@ -56,7 +52,9 @@ const p2 = new Promise((resolve) => {
   }, 1000)
 })
 
-const p3 = Promise.reject(new Error('失败'))
+const p3 = new Promise((resolve, reject) => {
+  reject('reject')
+})
 // const p3 = 1
 
 export { p0, p1, p2, p3, MyPromise }
