@@ -51,7 +51,6 @@ export default {
   },
   methods: {
     change(val) {
-      console.log('val', val)
       this.curInstance.updateValue(val)
     },
     blur() {

@@ -11,7 +11,8 @@
   "dependencies": {
     "element-plus": "^2.2.30",
     "nanoid": "^4.0.1",
-    "vue": "^3.2.45"
+    "vue": "^3.2.45",
+    "vue-router": "^4.1.6"
   },
   "devDependencies": {
     "@mistjs/eslint-config-vue": "^0.0.3",
