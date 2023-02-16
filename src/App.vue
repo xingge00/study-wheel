@@ -42,8 +42,8 @@ const singleList = ref(new Array(200).fill(0))
           <ElOption
             v-for="op in opsData"
             :key="op.id"
-            :label="op.id"
-            :value="op.label"
+            :label="op.label"
+            :value="op.id"
           />
         </ElSelect>
       </div>
@@ -53,8 +53,8 @@ const singleList = ref(new Array(200).fill(0))
           <ElOption
             v-for="op in opsData"
             :key="op.id"
-            :label="op.id"
-            :value="op.label"
+            :label="op.label"
+            :value="op.id"
           />
         </ElSelect>
       </div>
