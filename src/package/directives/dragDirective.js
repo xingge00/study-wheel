@@ -243,6 +243,8 @@ const DragDirective = {
   },
   unmounted(el, binding, vnode) {
     off(el, 'mousedown', el.handleMousedown)
+    const container = el.parentNode
+    container.parentNode.removeChild(container)
     console.log(binding, vnode)
   },
 }

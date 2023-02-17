@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="app-container">
     <sideBar style="width:168px;"></sideBar>
     <div class="main">
       <router-view />
@@ -12,7 +12,7 @@ import sideBar from './layout/sideBar.vue'
 </script>
 
 <style scoped>
-.container {
+.app-container {
   width: 100%;
   height: 100vh;
   display:flex;
