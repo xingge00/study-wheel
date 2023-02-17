@@ -31,7 +31,6 @@ const loadRouter = async (id) => {
     ]
     export default constantRoutes
   `
-
   return str
 }
 

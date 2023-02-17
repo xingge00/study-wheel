@@ -19,7 +19,7 @@ import sideBar from './layout/sideBar.vue'
 }
 .main {
   flex:1;
-  padding: 16px;
+  /* padding: 16px; */
   height: 100%;
   overflow: auto;
   box-sizing: border-box;
