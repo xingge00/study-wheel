@@ -1,40 +1,37 @@
 import path from 'path'
 import fs from 'fs'
-// const path = require('path')
+
 const autoImportKeyWord = 'autoImport'
 
 const readView = async () => {
   const rootPath = process.cwd()
   const targetPath = path.normalize(`${rootPath}\\src\\views`)
-  console.log(targetPath)
 
-  fs.readdir(targetPath, (err, data) => {
-    if (err) {
-      console.log('出错')
-    } else {
-      console.log('读取目录成功！')
-      console.log(data)
-    }
-  })
+  const dirList = fs.readdirSync(targetPath)
+
+  return dirList
+    .filter(name => !(name.includes('.') && !name.endsWith('.vue')) && name !== '404')
+    .map(name => name.endsWith('.vue') ? name.slice(0, name.length - 4) : name)
 }
 const loadRouter = async (id) => {
   if (id !== autoImportKeyWord) return null
 
-  readView()
+  const dirList = await readView()
+  const routerList = dirList.map(dir => `
+    {
+      path: '/${dir}',
+      name: '${dir}',
+      component: () => import('@/views/${dir}')
+    },
+  `).join('')
 
   const str = `
     const constantRoutes = [
-      {
-        path: '/',
-        component: () => import('@/views/VirtualSelect/index.vue'),
-      },
-      {
-        path: '/:path(.*)',
-        component: () => import('@/views/404/index.vue'),
-      },
+      ${routerList}
     ]
     export default constantRoutes
   `
+
   return str
 }
 

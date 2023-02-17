@@ -2,7 +2,7 @@
 import { ElOption, ElSelect } from 'element-plus'
 import { ref } from 'vue'
 
-import VSelect from '@/components/v-select/index.vue'
+import VSelect from '@/package/v-select/index.vue'
 
 const useV = ref(true)
 const handle = () => {
@@ -16,7 +16,7 @@ const opsData = [
 ]
 
 // 生成下拉框数量
-const generateCount = 100
+const generateCount = 150
 const multipleList = ref(new Array(generateCount).fill([0]))
 const singleList = ref(new Array(generateCount).fill(0))
 </script>
@@ -29,17 +29,17 @@ const singleList = ref(new Array(generateCount).fill(0))
     {{ useV }}<br>
     <template v-if="useV">
       单选：
-      <div class="flex">
+      <div class="flex-wrapper">
         <VSelect v-for="(item, idx) in singleList" :key="idx" v-model="singleList[idx]" :ops-data="opsData" />
       </div>
       多选：
-      <div class="flex">
+      <div class="flex-wrapper">
         <VSelect v-for="(item, idx) in multipleList" :key="idx" v-model="multipleList[idx]" multiple :ops-data="opsData" />
       </div>
     </template>
     <template v-else>
       单选：
-      <div class="flex">
+      <div class="flex-wrapper">
         <ElSelect v-for="(item, idx) in singleList" :key="idx" v-model="singleList[idx]">
           <ElOption
             v-for="op in opsData"
@@ -50,7 +50,7 @@ const singleList = ref(new Array(generateCount).fill(0))
         </ElSelect>
       </div>
       多选：
-      <div class="flex">
+      <div class="flex-wrapper">
         <ElSelect v-for="(item, idx) in multipleList" :key="idx" v-model="multipleList[idx]" multiple>
           <ElOption
             v-for="op in opsData"
@@ -65,8 +65,10 @@ const singleList = ref(new Array(generateCount).fill(0))
 </template>
 
 <style scoped>
-.flex {
+.flex-wrapper {
   display: flex;
   flex-wrap: wrap;
+  height: 40vh;
+  overflow: auto;
 }
 </style>
