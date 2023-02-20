@@ -8,7 +8,7 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import Icons from 'unplugin-icons/vite'
 import IconsResolver from 'unplugin-icons/resolver'
 import ElementPlus from 'unplugin-element-plus/vite'
-import { autoImportRouter } from './vitePlugins/autoImportRouter'
+import { autoImportRouter } from './vitePlugins/autoImportRouter'// 自定引入注册路由
 
 export default defineConfig({
   plugins: [
