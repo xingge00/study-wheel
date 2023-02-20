@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { ElOption, ElSelect } from 'element-plus'
+// import { ElOption, ElSelect } from 'element-plus'
 export default {
   name: 'CommonSelect',
   components: { ElOption, ElSelect },

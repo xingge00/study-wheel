@@ -1,5 +1,5 @@
 <script setup>
-import { ElOption, ElSelect } from 'element-plus'
+// import { ElOption, ElSelect } from 'element-plus'
 import { nextTick, ref, watch } from 'vue'
 
 import VSelect from '@/package/v-select/index.vue'
