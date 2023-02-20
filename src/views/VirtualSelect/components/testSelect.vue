@@ -7,7 +7,6 @@ const props = defineProps({
   modelValue: {},
   opsData: { type: Array, default: () => [] },
 })
-
 const emits = defineEmits(['update:modelValue'])
 
 const attrs = useAttrs()

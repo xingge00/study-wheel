@@ -7,21 +7,45 @@ const readView = async () => {
   const rootPath = process.cwd()
   const targetPath = path.normalize(`${rootPath}\\src\\views`)
 
+  // 获取页面目录
   const dirList = fs.readdirSync(targetPath)
-
-  return dirList
-    .filter(name => !(name.includes('.') && !name.endsWith('.vue')) && name !== '404')
-    .map(name => name.endsWith('.vue') ? name.slice(0, name.length - 4) : name)
+  return dirList.reduce((acc, curDir) => {
+    let pageInfo
+    if (curDir.includes('.')) {
+      if (curDir.endsWith('.vue')) {
+        pageInfo = { name: curDir.slice(0, curDir.length - 4) }
+      }
+    } else if (curDir !== '404') {
+      const realPath = path.normalize(`${targetPath}\\${curDir}`)
+      const curInfo = fs.readdirSync(realPath)
+      pageInfo = { name: curDir }
+      if (Array.isArray(curInfo) && curInfo.includes('desc.json')) {
+        const jsonPath = `${realPath}\\desc.json`
+        try {
+          Object.assign(pageInfo, JSON.parse(fs.readFileSync(jsonPath, 'utf-8')))
+        } catch (error) {
+          console.error('读取页面json配置出错')
+          console.error(`报错路径：${jsonPath}`)
+        }
+      }
+    }
+    if (pageInfo) {
+      acc.push(pageInfo)
+    }
+    return acc
+  }, [])
 }
 const loadRouter = async (id) => {
   if (id !== autoImportKeyWord) return null
 
-  const dirList = await readView()
-  const routerList = dirList.map(dir => `
+  const pageInfoList = await readView()
+  const routerList = pageInfoList.map(info => `
     {
-      path: '/${dir}',
-      name: '${dir}',
-      component: () => import('@/views/${dir}')
+      path: '/${info.name}',
+      name: '${info.name}',
+      menuName: ${info.menuName ? `'${info.menuName}'` : info.menuName},
+      desc: ${info.desc ? `'${info.desc}'` : info.desc},
+      component: () => import('@/views/${info.name}')
     },
   `).join('')
 

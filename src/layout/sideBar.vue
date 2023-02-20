@@ -22,7 +22,7 @@ const isCollapse = ref(false)
     <el-menu-item v-for="item in constantRoutes" :key="item.name" :index="item.name">
       <el-icon><IEpdocument /></el-icon>
       <template #title>
-        {{ item.name }}
+        {{ item.menuName || item.name }}
       </template>
     </el-menu-item>
   </el-menu>
