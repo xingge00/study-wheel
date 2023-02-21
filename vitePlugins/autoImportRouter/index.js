@@ -11,15 +11,23 @@ const readView = async () => {
   const dirList = fs.readdirSync(targetPath)
   return dirList.reduce((acc, curDir) => {
     let pageInfo
+    // 判断路径是文件
     if (curDir.includes('.')) {
       if (curDir.endsWith('.vue')) {
         pageInfo = { name: curDir.slice(0, curDir.length - 4) }
       }
-    } else if (curDir !== '404') {
+    }
+    // 判断路径是目并且过滤404页面
+    else if (curDir !== '404') {
       const realPath = path.normalize(`${targetPath}\\${curDir}`)
       const curInfo = fs.readdirSync(realPath)
+      // 如果没有当前目录下没有index.vue则不生成路由
+      if (!Array.isArray(curInfo) || !curInfo.includes('index.vue')) {
+        return acc
+      }
       pageInfo = { name: curDir }
-      if (Array.isArray(curInfo) && curInfo.includes('desc.json')) {
+      // 如果当前目录下有desc.json则加载配置
+      if (curInfo.includes('desc.json')) {
         const jsonPath = `${realPath}\\desc.json`
         try {
           Object.assign(pageInfo, JSON.parse(fs.readFileSync(jsonPath, 'utf-8')))
