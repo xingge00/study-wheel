@@ -1,3 +1,8 @@
+
+<script setup>
+import sideBar from './layout/sideBar.vue'
+</script>
+
 <template>
   <div class="app-container">
     <sideBar></sideBar>
@@ -6,10 +11,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-import sideBar from './layout/sideBar.vue'
-</script>
 
 <style lang="scss" scoped>
 .app-container {

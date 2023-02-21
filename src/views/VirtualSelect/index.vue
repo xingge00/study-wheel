@@ -1,10 +1,10 @@
 <script setup>
-import { ElOption, ElSelect } from 'element-plus'
-import { nextTick, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
-import VSelect from '@/package/v-select/index.vue'
+import TestSelect from './components/testSelect.vue'
 
-const useV = ref(true)
+/** 1：单例模式 2：封装组件 3：正常模式 */
+const useType = ref(1)
 
 const opsData = [
   { id: 0, label: '0000' },
@@ -30,9 +30,12 @@ watch(
   { immediate: true },
 )
 
+// 时间收集[初始化时间,销毁时间,更新时间]
+const normalInitTime = ref([0, 0, 0])
+const componentInitTime = ref([0, 0, 0])
+const VInitTime = ref([0, 0, 0])
+
 // 更新时间时间计算
-const normalChangeTime = ref(0)
-const VChangeTime = ref(0)
 watch(
   [() => singleList, () => multipleList],
   async (val) => {
@@ -41,34 +44,37 @@ watch(
     await new Promise(resolve => setTimeout(() => resolve()))
 
     const lengthOfTime = new Date() - time
-    if (useV.value) {
-      VChangeTime.value = (VChangeTime.value + lengthOfTime) / ((VChangeTime.value !== 0) + 1)
-    } else {
-      normalChangeTime.value = (normalChangeTime.value + lengthOfTime) / ((normalChangeTime.value !== 0) + 1)
+    if (useType.value === 1) {
+      VInitTime.value[2] = (VInitTime.value[2] + lengthOfTime) / ((VInitTime.value[2] !== 0) + 1)
+    }
+    else if (useType.value === 2) {
+      componentInitTime.value[2] = (componentInitTime.value[2] + lengthOfTime) / ((componentInitTime.value[2] !== 0) + 1)
+    }
+    else if (useType.value === 3) {
+      normalInitTime.value[2] = (normalInitTime.value[2] + lengthOfTime) / ((normalInitTime.value[2] !== 0) + 1)
     }
   },
   { deep: true },
 )
 
 // 初始化时间计算
-const normalInitTime = ref([0, 0])
-const VInitTime = ref([0, 0])
 const waitFlag = ref(false)
 watch(
-  () => useV.value,
+  () => useType.value,
   async (newVal, oldVal) => {
     const time1 = new Date()
     waitFlag.value = false
     await new Promise(resolve => setTimeout(() => resolve()))
     // 销毁完毕
     const time2 = new Date()
-    if (newVal) {
-      // 首次进入不计算正常模式销毁
-      if (oldVal !== undefined) {
-        normalInitTime.value[1] = time2 - time1 > 20 ? time2 - time1 : 0
-      }
-    } else {
+    if (oldVal === 1) {
       VInitTime.value[1] = time2 - time1
+    }
+    else if (oldVal === 2) {
+      componentInitTime.value[1] = time2 - time1
+    }
+    else if (oldVal === 3) {
+      normalInitTime.value[1] = time2 - time1 > 20 ? time2 - time1 : 0
     }
 
     waitFlag.value = true
@@ -76,23 +82,40 @@ watch(
     await new Promise(resolve => setTimeout(() => resolve()))
     // 渲染完毕
     const time3 = new Date()
-    if (newVal) {
+    if (newVal === 1) {
       VInitTime.value[0] = time3 - time2
-    } else {
+    }
+    else if (newVal === 2) {
+      componentInitTime.value[0] = time3 - time2
+    }
+    else if (newVal === 3) {
       normalInitTime.value[0] = time3 - time2
     }
   },
   { immediate: true },
 )
+
+// 展示时间信息
+const renderTimeList = computed(() => {
+  return [
+    { type: 1, title: '单例模式', initTime: VInitTime.value },
+    { type: 2, title: '组件封装', initTime: componentInitTime.value },
+    { type: 3, title: '正常模式', initTime: normalInitTime.value },
+  ]
+})
+console.log(renderTimeList)
 </script>
 
 <template>
   <div class="container">
-    <el-radio-group v-model="useV">
-      <el-radio-button :label="true">
+    <el-radio-group v-model="useType">
+      <el-radio-button :label="1">
         单例模式
       </el-radio-button>
-      <el-radio-button :label="false">
+      <el-radio-button :label="2">
+        组件封装
+      </el-radio-button>
+      <el-radio-button :label="3">
         正常模式
       </el-radio-button>
     </el-radio-group>&emsp;
@@ -101,45 +124,31 @@ watch(
       重选渲染
     </el-button>
 
-    <div class="time-wrapper">
+    <div v-for="item in renderTimeList" :key="item.type" class="time-wrapper">
       <div class="title">
-        单例模式
+        {{ item.title }}
       </div>
       <div style="width:250px;">
-        初始化时间:{{ VInitTime[0] }}ms
+        初始化时间:{{ item.initTime[0] }}ms
       </div>
       <div style="width:250px;">
-        销毁时间:{{ VInitTime[1] }}ms
+        销毁时间:{{ item.initTime[1] }}ms
       </div>
       <div style="width:250px;">
-        平均更新时间:{{ VChangeTime.toFixed(2) }}ms
+        平均更新时间:{{ item.initTime[2].toFixed(2) }}ms
       </div>
     </div>
-    <div class="time-wrapper">
-      <div class="title">
-        正常模式
-      </div>
-      <div style="width:250px;">
-        初始化时间:{{ normalInitTime[0] }}ms
-      </div>
-      <div style="width:250px;">
-        销毁时间:{{ normalInitTime[1] }}ms
-      </div>
-      <div style="width:250px;">
-        平均更新时间:{{ normalChangeTime.toFixed(2) }}ms
-      </div>
-    </div>
-    <template v-if="useV && waitFlag">
+    <template v-if="[1, 2].includes(useType) && waitFlag">
       单选：
       <div class="flex-wrapper">
-        <VSelect v-for="(item, idx) in singleList" :key="idx" v-model="singleList[idx]" :ops-data="opsData" />
+        <TestSelect v-for="(item, idx) in singleList" :key="idx" v-model="singleList[idx]" :use-v="useType === 1" :ops-data="opsData" />
       </div>
       多选：
       <div class="flex-wrapper">
-        <VSelect v-for="(item, idx) in multipleList" :key="idx" v-model="multipleList[idx]" multiple :ops-data="opsData" />
+        <TestSelect v-for="(item, idx) in multipleList" :key="idx" v-model="multipleList[idx]" multiple :use-v="useType === 1" :ops-data="opsData" />
       </div>
     </template>
-    <template v-if="!useV && waitFlag">
+    <template v-if="useType === 3 && waitFlag">
       单选：
       <div class="flex-wrapper">
         <ElSelect v-for="(item, idx) in singleList" :key="idx" v-model="singleList[idx]">
@@ -166,7 +175,7 @@ watch(
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .container {
   padding: 16px;
 }
@@ -179,15 +188,16 @@ watch(
   padding: 0 16px;
   height: 60px;
   align-items: center;
-}
-.time-wrapper .title {
-  width: 100px;
-  font-weight: bold;
+  .title {
+    width: 100px;
+    font-weight: bold;
+  }
 }
 .flex-wrapper {
+  margin: 5px 0;
   display: flex;
   flex-wrap: wrap;
-  height: 35vh;
+  height: 30vh;
   overflow: auto;
 }
 </style>
