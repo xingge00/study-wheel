@@ -16,13 +16,28 @@ const sharedWorker = {
     sw.port.addEventListener('message', this.messageHandle)
   },
   close() {
-    this.postMessage({ type: 'close' })
+    this.postMessage({ sendType: 'close' })
     sw.port.removeEventListener('message', this.messageHandle)
     sw.port.close()
     sw = undefined
   },
   getSharedWorker() {
     return sw
+  },
+  closeWebsocket() {
+    this.postMessage({ sendType: 'clearWebsocket' })
+  },
+  openWebsocket() {
+    this.postMessage({ sendType: 'openWebsocket' })
+  },
+  setServeCount(val) {
+    this.postMessage({
+      sendType: 'all',
+      data: {
+        eventType: 'updateServeCount',
+        content: val,
+      },
+    })
   },
   /**
    * @param {sendType,data} data

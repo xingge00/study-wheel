@@ -1,4 +1,4 @@
 {
   "menuName": "跨标签页通信",
-  "desc": "跨标签页通信"
+  "desc": "跨标签页通信,sharedWorker"
 }
