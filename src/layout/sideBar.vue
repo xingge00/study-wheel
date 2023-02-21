@@ -1,4 +1,3 @@
-
 <script setup>
 import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -17,7 +16,7 @@ const isCollapse = ref(false)
 </script>
 
 <template>
-  <el-menu :key="defaultActive" :default-active="defaultActive" :collapse="isCollapse" router>
+  <el-menu :key="defaultActive" class="sw-menus" :default-active="defaultActive" :collapse="isCollapse" router>
     <el-menu-item v-for="item in constantRoutes" :key="item.name" :index="item.name">
       <el-icon><document /></el-icon>
       <template #title>
@@ -27,6 +26,6 @@ const isCollapse = ref(false)
   </el-menu>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 
 </style>

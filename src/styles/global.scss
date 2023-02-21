@@ -1,0 +1,31 @@
+$menus-bg-color: #F6F7F8;
+
+.sw-menus {
+  flex: 0;
+  width:168px;
+  background-color: $menus-bg-color;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/*滚动条样式*/
+::-webkit-scrollbar {
+  width: 6px;
+  height: 7px;
+}
+/*滚动条有滑块的轨道部分*/
+::-webkit-scrollbar-thumb {
+  background-color: #ebebeb;
+  border-radius: 7px;
+}
+/*滚动条滑块(竖向:vertical 横向:horizontal)*/
+::-webkit-scrollbar-thumb:hover {
+  background-color: darkgrey;
+}
+/*同时拥有垂直和水平滚动条时交汇部分*/
+::-webkit-scrollbar-corner {
+  display: block; /*修复交会时出现的白块*/
+}

@@ -9,4 +9,12 @@ export default defineConfig({
     alias: [{ find: '@', replacement: resolve(__dirname, 'src') }],
     extensions: ['.vue', '.js', '.jsx'],
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: '@import "@/styles/constant.scss";',
+      },
+    },
+  },
+
 })
