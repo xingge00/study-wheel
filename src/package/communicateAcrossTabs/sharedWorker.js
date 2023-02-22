@@ -16,6 +16,7 @@ const sharedWorker = {
     sw.port.addEventListener('message', this.messageHandle)
   },
   close() {
+    if (!sw) return
     this.postMessage({ sendType: 'close' })
     sw.port.removeEventListener('message', this.messageHandle)
     sw.port.close()
