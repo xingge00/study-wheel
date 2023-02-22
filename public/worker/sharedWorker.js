@@ -31,10 +31,12 @@ self.addEventListener('connect', (e) => {
 
   port.onmessage = ({ data:msg }) => {
     /**
-     * sendType类型为:[all,broadcast,close]
+     * sendType类型为:[all,broadcast,close,clearWebsocket]
      *  all：给全部端口广播消息（包括自己
      *  broadcast：除自身端口外给其他端口广播消息
      *  close：关闭当前端口
+     *  clearWebsocket：关闭mock的websocket
+     *  openWebsocket：打开mock的websocket
      */
     switch (msg.sendType) {
       case 'all':
