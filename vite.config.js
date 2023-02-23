@@ -49,5 +49,10 @@ export default defineConfig({
       },
     },
   },
+  server: {
+    port: 8848,
+    open: true,
+    outDir: 'dist',
+  },
 
 })

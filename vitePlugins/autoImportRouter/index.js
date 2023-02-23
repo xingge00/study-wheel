@@ -66,7 +66,7 @@ const loadRouter = async () => {
 }
 
 const loadGetCode = async () => {
-
+  return null
 }
 
 const autoImportRouter = () => {
@@ -80,8 +80,8 @@ const autoImportRouter = () => {
       return null // 返回null表明是其他id要继续处理
     },
     load(id) {
-      if (id !== getCodeKeyWord) return loadGetCode(id)
-      if (id !== autoImportKeyWord) return loadRouter(id)
+      if (id === getCodeKeyWord) return loadGetCode(id)
+      if (id === autoImportKeyWord) return loadRouter(id)
       return null
     },
   }

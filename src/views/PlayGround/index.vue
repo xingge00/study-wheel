@@ -1,6 +1,5 @@
 
 <script setup>
-import curCode from 'curCode'
 import { ref } from 'vue'
 const shoaDialog = ref(false)
 const openDialog = () => {
@@ -17,7 +16,6 @@ const openDialog = () => {
     title="Tips"
     width="70%"
   >
-    <span>{{curCode}}</span>
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="shoaDialog = false">Cancel</el-button>
