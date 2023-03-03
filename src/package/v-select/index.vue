@@ -13,9 +13,9 @@
 </template>
 
 <script>
-import nanoid from './utils/nanoid'
 import StyleSelect from './StyleSelect.vue'
 import { getCommonSelect, unBind } from './core.js'
+import nanoid from '@/utils/nanoid'
 export default {
   name: 'VSelector',
   components: {
