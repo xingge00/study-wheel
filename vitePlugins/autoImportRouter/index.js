@@ -2,7 +2,6 @@ import path from 'path'
 import fs from 'fs'
 
 const autoImportKeyWord = 'autoImport'
-const getCodeKeyWord = 'getCode'
 
 const readView = async () => {
   const rootPath = process.cwd()
@@ -46,15 +45,26 @@ const readView = async () => {
 }
 const loadRouter = async () => {
   const pageInfoList = await readView()
-  const routerList = pageInfoList.map(info => `
+  const routerList = pageInfoList
+  // 按sort配置排序
+    .sort((a, b) => {
+      const num1 = parseInt(a.sort)
+      const num2 = parseInt(b.sort)
+      const num1IsNaN = Object.is(num1, NaN)
+      const num2IsNaN = Object.is(num2, NaN)
+      if (num1IsNaN && num2IsNaN) return -1
+      if (num1IsNaN || num2IsNaN) return num1IsNaN ? 1 : -1
+      return num1 - num2
+    })
+  // 组装路由信息
+    .map(info => `
     {
       path: '/${info.name}',
       name: '${info.name}',
       menuName: ${info.menuName ? `'${info.menuName}'` : info.menuName},
       desc: ${info.desc ? `'${info.desc}'` : info.desc},
       component: () => import('@/views/${info.name}')
-    },
-  `).join('')
+    },`).join('')
 
   const str = `
     const constantRoutes = [
@@ -64,11 +74,6 @@ const loadRouter = async () => {
   `
   return str
 }
-
-const loadGetCode = async () => {
-  return null
-}
-
 const autoImportRouter = () => {
   return {
     name: 'vite-plugin-auto-Import-router',
@@ -80,7 +85,6 @@ const autoImportRouter = () => {
       return null // 返回null表明是其他id要继续处理
     },
     load(id) {
-      if (id === getCodeKeyWord) return loadGetCode(id)
       if (id === autoImportKeyWord) return loadRouter(id)
       return null
     },

@@ -1,32 +1,42 @@
 
 <script setup>
 import { ref } from 'vue'
+
+import { sourceCode as curVueCode } from '@@@/src/views/PlayGround/index.vueshow'
+
 const shoaDialog = ref(false)
+
 const openDialog = () => {
   shoaDialog.value = true
 }
 </script>
 
 <template>
-  <el-button @click="openDialog">
-    打开弹窗
-  </el-button>
+  <div class="wrapper">
+    <el-button @click="openDialog">
+      打开弹窗
+    </el-button>
+  </div>
   <el-dialog
     v-model="shoaDialog"
-    title="Tips"
-    width="70%"
+    title="当前页面源码"
+    top="50px"
   >
+    <highlightjs
+      style="height:100%;overflow: auto;"
+      language="js"
+      :code="curVueCode"
+    />
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="shoaDialog = false">Cancel</el-button>
-        <el-button type="primary" @click="shoaDialog = false">
-          Confirm
-        </el-button>
+        <el-button @click="shoaDialog = false">关闭</el-button>
       </span>
     </template>
   </el-dialog>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
+.wrapper {
 
+}
 </style>

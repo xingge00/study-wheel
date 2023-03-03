@@ -9,7 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@highlightjs/vue-plugin": "^2.1.0",
     "element-plus": "^2.2.30",
+    "highlight.js": "^11.7.0",
     "nanoid": "^4.0.1",
     "pinia": "^2.0.32",
     "vue": "^3.2.45",

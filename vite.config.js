@@ -9,11 +9,13 @@ import Icons from 'unplugin-icons/vite'
 import IconsResolver from 'unplugin-icons/resolver'
 import ElementPlus from 'unplugin-element-plus/vite'
 import { autoImportRouter } from './vitePlugins/autoImportRouter'// 自定引入注册路由
+import { getSourceCode } from './vitePlugins/getSourceCode'
 
 export default defineConfig({
   plugins: [
     vue(),
     autoImportRouter(),
+    getSourceCode(),
     AutoImport({
       resolvers: [
         ElementPlusResolver(),
