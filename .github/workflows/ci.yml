@@ -2,7 +2,7 @@ name: GitHub Actions Build and Deploy Demo
 on: # 指定触发workflow的条件，这里是指定了每push一次到main分支，则触发一次
   push:
     branches:
-      - main
+      - master
 jobs:  # workflows文件主体，可以指定一个或者多个，这里指定了一个job - build-and-deploy
   build-and-deploy:
     runs-on: ubuntu-latest # 在最新的ubuntu上运行
