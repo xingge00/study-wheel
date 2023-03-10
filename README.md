@@ -2,7 +2,7 @@
 本项目主要收集遇到比较有趣的技术和问题及其解决的方案，并列出了应用的例子。
 
 ## 在线预览
-[https://xingge00.github.io/](https://xingge00.github.io/)
+[https://xingge00.github.io/study-wheel/](https://xingge00.github.io/study-wheel/)
  
 ## 1.单例模式的下拉框组件
 
