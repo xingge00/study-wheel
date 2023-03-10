@@ -12,6 +12,7 @@ import { autoImportRouter } from './vitePlugins/autoImportRouter'// 自定引入
 import { getSourceCode } from './vitePlugins/getSourceCode'
 
 export default defineConfig({
+  base: '/study-wheel/', // github page 部署需要资源前缀
   plugins: [
     vue(),
     autoImportRouter(),
