@@ -57,12 +57,15 @@ const p3 = new Promise((resolve, reject) => {
 })
 // const p3 = 1
 
-// const all1 = await Promise.all([p0, p1, p2, p3])
+async function test() {
+  // const all1 = await Promise.all([p0, p1, p2, p3])
 // const all2 = await MyPromise.all([p0, p1, p2, p3])
 // console.log(all1, all2)
 
-const race1 = await Promise.race([p0, p1, p2, p3])
-const race2 = await MyPromise.race([p0, p1, p2, p3])
-console.log(race1, race2)
+  const race1 = await Promise.race([p0, p1, p2, p3])
+  const race2 = await MyPromise.race([p0, p1, p2, p3])
+  console.log(race1, race2)
+}
+test()
 
 export { p0, p1, p2, p3, MyPromise }
