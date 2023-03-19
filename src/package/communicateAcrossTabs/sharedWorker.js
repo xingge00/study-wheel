@@ -1,5 +1,7 @@
 import { useCommunicateStore } from '@/store'
 const communicate = useCommunicateStore()
+const workerUrl = `${import.meta.env.VITE_APP_BASE_URL}/worker/sharedWorker.js`
+console.log(workerUrl)
 
 let sw
 const sharedWorker = {
@@ -9,7 +11,7 @@ const sharedWorker = {
       return
     }
     // sharedWorker.js放在public目录下
-    sw = new SharedWorker('/worker/sharedWorker.js')
+    sw = new SharedWorker(workerUrl)
     // 启动线程端口
     sw.port.start()
     // 线程监听消息
