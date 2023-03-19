@@ -19,6 +19,8 @@ import sideBar from './layout/sideBar.vue'
   display:flex;
   background-color: $theme-background-color;
   .main {
+    padding: 15px;
+    box-sizing: border-box;
     flex:1;
     height: 100%;
     overflow: auto;

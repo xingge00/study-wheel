@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { constantRoutes } from '@/router'
 
@@ -14,6 +14,17 @@ const unwatch = watch(
   })
 
 const isCollapse = ref(false)
+
+const calcWidth = () => {
+  isCollapse.value = window.innerWidth < 900
+}
+onMounted(() => {
+  calcWidth()
+  window.addEventListener('resize', calcWidth)
+})
+onUnmounted(() => {
+  window.removeEventListener('resize', calcWidth)
+})
 </script>
 
 <template>

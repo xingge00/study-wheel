@@ -188,6 +188,9 @@ console.log(renderTimeList)
   padding: 0 16px;
   height: 60px;
   align-items: center;
+  @media screen and (max-width: 900px){
+    font-size: 12px;
+  }
   .title {
     width: 100px;
     font-weight: bold;
