@@ -1,0 +1,1 @@
+let t=(n=21)=>crypto.getRandomValues(new Uint8Array(n)).reduce((e,r)=>(r&=63,r<36?e+=r.toString(36):r<62?e+=(r-26).toString(36).toUpperCase():r>62?e+="-":e+="_",e),"");function a(n){let e=t(n).trim();for(;!/^[a-zA-Z][a-zA-Z0-9]*$/.test(e);)e=t(n).trim();return e}export{a as n};
