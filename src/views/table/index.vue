@@ -49,7 +49,7 @@ const tableColums = [
     prop: 'field2',
     label: '字段2编辑',
     width: '250',
-    render: ({ row }) => <el-input vModel={row['field2']}></el-input>,
+    render: ({ row }) => <el-input class="no-drag" vModel={row['field2']}></el-input>,
   },
   {
     prop: 'field2',
@@ -67,6 +67,7 @@ const tableColums = [
 <template>
   <MyTable
     v-model:table-data="tableData"
+    :use-drag="true"
     :colums="tableColums"
   ></MyTable>
 </template>
