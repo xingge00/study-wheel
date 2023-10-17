@@ -1,5 +1,5 @@
 /**
- * 异步任务最大并发数
+ * 异步任务并发
  */
 
 // 最大重新执行次数
@@ -72,6 +72,9 @@ const generatePromise = (time, name) => {
     console.log(`${name}正在执行...`)
     setTimeout(() => {
       resolve(name)
+      if (name === 'task9') {
+        addTask(generatePromise(1000, 'task10'))
+      }
 
       // 模拟报错
       // errFlag = (errFlag + 1) % 2
@@ -91,3 +94,6 @@ addTask(generatePromise(1000, 'task6'))
 addTask(generatePromise(1000, 'task7'))
 addTask(generatePromise(1000, 'task8'))
 addTask(generatePromise(1000, 'task9'))
+console.log('sssss')
+console.log('sssss')
+console.log('sssss')
