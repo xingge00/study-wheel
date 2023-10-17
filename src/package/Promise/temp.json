@@ -1,0 +1,190 @@
+[
+  {
+    "path": "/inform",
+    "name": "inform",
+    "redirect": "/inform/inform-l1",
+    "component": "@/views/null",
+    "alwaysShow": true,
+    "hidden": false,
+    "children": [
+      {
+        "path": "/inform-l1",
+        "name": "inform-l1",
+        "redirect": "noRedirect",
+        "component": "@/views/quality/informL1/index",
+        "hidden": false,
+        "meta": { "title": "一级质控", "noCache": true, "affix": true }
+      },
+      {
+        "path": "/inform-l2",
+        "name": "inform-l2",
+        "redirect": "noRedirect",
+        "component": "@/views/quality/informL2/index",
+        "hidden": false,
+        "meta": { "title": "二级质控", "noCache": true, "affix": true }
+      },
+      {
+        "path": "/inform-l3",
+        "name": "inform-l3",
+        "redirect": "noRedirect",
+        "component": "@/views/quality/informL3/index",
+        "hidden": false,
+        "meta": { "title": "三级质控", "noCache": true, "affix": true }
+      },
+      {
+        "path": "/inform-night",
+        "name": "inform-night",
+        "redirect": "noRedirect",
+        "component": "@/views/quality/informNight/index",
+        "hidden": false,
+        "meta": { "title": "夜查房评分记录", "noCache": true, "affix": true }
+      }
+    ],
+    "meta": { "title": "质控上报记录", "noCache": true, "affix": true }
+  },
+  {
+    "path": "/plan",
+    "name": "plan",
+    "redirect": "noRedirect",
+    "component": "@/views/quality/plan/index",
+    "hidden": false,
+    "meta": { "title": "质控计划", "noCache": true, "affix": true }
+  },
+  {
+    "path": "/audit",
+    "name": "audit",
+    "redirect": "noRedirect",
+    "component": "@/views/quality/audit/index",
+    "hidden": false,
+    "meta": { "title": "质控审核", "noCache": true, "affix": true }
+  },
+  {
+    "path": "/stats",
+    "name": "stats",
+    "redirect": "/stats/stats-hlzlxc",
+    "component": "@/views/null",
+    "alwaysShow": true,
+    "hidden": false,
+    "children": [
+      {
+        "path": "/stats-hlzlxc",
+        "name": "stats-hlzlxc",
+        "redirect": "noRedirect",
+        "component": "@/views/quality/statsHlzlxc/index",
+        "hidden": false,
+        "meta": {
+          "title": "一级护理质量巡查情况汇总表",
+          "noCache": true,
+          "affix": true
+        }
+      },
+      {
+        "path": "/stats-hsszjc",
+        "name": "stats-hsszjc",
+        "redirect": "noRedirect",
+        "component": "@/views/quality/statsHsszjc/index",
+        "hidden": false,
+        "meta": {
+          "title": "二级护士素质检查情况汇总表",
+          "noCache": true,
+          "affix": true
+        }
+      }
+    ],
+    "meta": { "title": "质控统计分析", "noCache": true, "affix": true }
+  },
+  {
+    "path": "/nstats",
+    "name": "nstats",
+    "redirect": "/nstats/nstats-hlzlxc",
+    "component": "@/views/null",
+    "alwaysShow": true,
+    "hidden": false,
+    "children": [
+      {
+        "path": "/nstats-hlzlxc",
+        "name": "nstats-hlzlxc",
+        "redirect": "noRedirect",
+        "component": "@/views/quality/nstatsZkfdj/index",
+        "hidden": false,
+        "meta": {
+          "title": "夜查房质控分登记表",
+          "noCache": true,
+          "affix": true
+        }
+      },
+      {
+        "path": "/nstats-hsszjc",
+        "name": "nstats-hsszjc",
+        "redirect": "noRedirect",
+        "component": "@/views/quality/nstatsZkffk/index",
+        "hidden": false,
+        "meta": {
+          "title": "夜查房质控分反馈表",
+          "noCache": true,
+          "affix": true
+        }
+      }
+    ],
+    "meta": { "title": "夜查房统计分析", "noCache": true, "affix": true }
+  },
+  {
+    "path": "/report",
+    "name": "report",
+    "redirect": "/report/report-l1",
+    "component": "@/views/null",
+    "alwaysShow": true,
+    "hidden": false,
+    "children": [
+      {
+        "path": "/report-l1",
+        "name": "report-l1",
+        "redirect": "noRedirect",
+        "component": "@/views/quality/reportL1/index",
+        "hidden": false,
+        "meta": { "title": "一级质控报告", "noCache": true, "affix": true }
+      },
+      {
+        "path": "/report-l2",
+        "name": "report-l2",
+        "redirect": "noRedirect",
+        "component": "@/views/quality/reportL2/index",
+        "hidden": false,
+        "meta": { "title": "二级质控报告", "noCache": true, "affix": true }
+      },
+      {
+        "path": "/report-l3",
+        "name": "report-l3",
+        "redirect": "noRedirect",
+        "component": "@/views/quality/reportL3/index",
+        "hidden": false,
+        "meta": { "title": "三级质控报告", "noCache": true, "affix": true }
+      },
+      {
+        "path": "/report-night",
+        "name": "report-night",
+        "redirect": "noRedirect",
+        "component": "@/views/quality/reportNight/index",
+        "hidden": false,
+        "meta": { "title": "夜查房报告", "noCache": true, "affix": true }
+      }
+    ],
+    "meta": { "title": "统计报告", "noCache": true, "affix": true }
+  },
+  {
+    "path": "/nschedule",
+    "name": "nschedule",
+    "redirect": "noRedirect",
+    "component": "@/views/quality/nschedule/index",
+    "hidden": false,
+    "meta": { "title": "夜查房排班", "noCache": true, "affix": true }
+  },
+  {
+    "path": "/group",
+    "name": "group",
+    "redirect": "noRedirect",
+    "component": "@/views/quality/group/index",
+    "hidden": false,
+    "meta": { "title": "质控小组", "noCache": true, "affix": true }
+  }
+]
