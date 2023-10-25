@@ -1,1 +1,0 @@
-import{u as r,o as n,c as s,a as t,b as c,w as u,F as m}from"./index-4bd6017e.js";import{E as _}from"./el-button-1395d09d.js";import"./index-6ebd08e9.js";import"./index-ba601c6e.js";const k={__name:"index",setup(p){const e=r(),o=()=>{e.push("/")};return(l,i)=>{const a=_;return n(),s(m,null,[t(" 404 "),c(a,{onClick:o},{default:u(()=>[t(" 返回 ")]),_:1})],64)}}};export{k as default};
