@@ -1,7 +1,7 @@
 <script>
 import { computed, defineComponent, h, nextTick, ref } from 'vue'
 import Column from './Column.vue'
-import useDragTable from './useDragTable.js'
+import { useDragTable } from './useDragTable'
 /** v-for遍历的table组件，可以使用render编写h函数 */
 export default defineComponent({
   components: {
@@ -64,6 +64,7 @@ export default defineComponent({
     style="width: 100%"
     highlight-current-row
     class="cell-no-padding render-table"
+    v-bind="$attrs"
   >
     <Column :colums="colums"></Column>
   </el-table>
