@@ -29,7 +29,7 @@ export default {
             {...attrs}
             v-slots={{
               default: (scope) => {
-                if (Array.isArray(children) && children.length > 1) return getRender(children)
+                if (Array.isArray(children) && children.length > 0) return getRender(children)
                 else return cellRender(otherAttrs, scope)
               },
               header: () => {

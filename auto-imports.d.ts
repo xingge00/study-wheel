@@ -5,5 +5,5 @@
 export {}
 declare global {
   const ElOption: typeof import('element-plus/es')['ElOption']
-  const ElSelect: typeof import('element-plus/es')['ElSelect']  const ElInput: typeof import('element-plus/es')['ElInput']
+  const ElSelect: typeof import('element-plus/es')['ElSelect']
 }
