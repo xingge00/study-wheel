@@ -1,11 +1,20 @@
 
 <script setup>
-import sideBar from './layout/sideBar.vue'
+import { ref, watch } from 'vue'
+
+const route = useRoute()
+console.log('route', route)
+
+const showSideBar = ref(true)
+watch(() => route, () => {
+  if (route.path)
+    showSideBar.value = !['/playBall'].includes(route.path)
+})
 </script>
 
 <template>
   <div class="app-container">
-    <sideBar></sideBar>
+    <!-- <sideBar ></sideBar> -->
     <div class="main">
       <router-view />
     </div>

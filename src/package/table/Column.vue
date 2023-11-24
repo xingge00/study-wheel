@@ -3,6 +3,7 @@ export default {
   name: 'Column',
   props: { colums: Array },
   render: (ctx) => {
+    console.log('render触发111111111111', ctx)
     const cellRender = (col, scope) => {
       const {
         render,

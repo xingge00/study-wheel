@@ -77,8 +77,8 @@ const reRender = async (val) => {
 
 <template>
   <div class="wrapper">
+    <!-- v-if="renderFlag" -->
     <MyTable
-      v-if="renderFlag"
       v-model:table-data="tableData"
       :use-drag="true"
       :colums="tableColums"
