@@ -1,7 +1,8 @@
 
 <script setup>
 import { ref, watch } from 'vue'
-
+import { useRoute } from 'vue-router'
+// import sideBar from '@/layout/sideBar.vue'
 const route = useRoute()
 console.log('route', route)
 
@@ -14,7 +15,7 @@ watch(() => route, () => {
 
 <template>
   <div class="app-container">
-    <!-- <sideBar ></sideBar> -->
+    <!-- <sideBar></sideBar> -->
     <div class="main">
       <router-view />
     </div>
