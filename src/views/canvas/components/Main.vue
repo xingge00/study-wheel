@@ -1,11 +1,74 @@
 
 <script setup>
-import RenderItem from './RenderItem.vue'
+import RenderList from './RenderList.vue'
+
+const nodeList = [
+  {
+    id: '0',
+    type: 'start',
+  },
+  {
+    id: '1',
+    type: 'if',
+  },
+  {
+    id: '122',
+    type: 'ifds',
+  },
+  {
+    id: '2',
+    type: 'switch',
+    branch: [
+      [
+        {
+          id: '2-1-1',
+          type: 'if',
+        },
+        {
+          id: '2-1-2',
+          type: 'aaa',
+        },
+      ],
+      [
+        {
+          id: '2-2-1',
+          type: 'aaa',
+        },
+        {
+          id: '2-2-2',
+          type: 'if',
+        },
+      ],
+      [
+        // {
+        //   id: '2-3-1',
+        //   type: 'if',
+        // },
+        // {
+        //   id: '2-3-2',
+        //   type: 'aaa',
+        // },
+      ],
+    ],
+  },
+  {
+    id: '3',
+    type: 'switch',
+  },
+  {
+    id: '4',
+    type: 'aaa',
+  },
+  {
+    id: '999',
+    type: 'end',
+  },
+]
 </script>
 
 <template>
   <div class="canvas-main">
-    <RenderItem></RenderItem>
+    <RenderList v-model:node-list="nodeList" :start-line="false"></RenderList>
   </div>
 </template>
 
