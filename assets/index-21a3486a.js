@@ -1,1 +1,0 @@
-import{_ as c,o as n,c as s,b as a,C as r}from"./index-9344a9a8.js";const o={};function d(e,_){return" RenderItem "}const i=c(o,[["render",d]]);const p={class:"canvas-main"},m={__name:"Main",setup(e){return(_,t)=>(n(),s("div",p,[a(i)]))}},u=c(m,[["__scopeId","data-v-d565207f"]]),l={__name:"index",setup(e){return(_,t)=>(n(),r(u))}};export{l as default};
