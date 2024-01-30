@@ -5,6 +5,14 @@ $line-length: 20px; // 连线长度
 
 $node-wrapper-size: 100px; // 节点大小
 
+.render-list-wrapper {
+  display: inline-flex;
+  text-align: center;
+  min-width: 100px;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
 
 // 节点容器
 .node-wrapper {
@@ -15,32 +23,21 @@ $node-wrapper-size: 100px; // 节点大小
   margin:0 auto;
 }
 
-// 圆节点
-.c-circle {
-  width:50px;
-  height:50px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: orangered;
-  color: #fff;
-}
-
 // 连线
 .line {
   width: $line-size;
-  height: $line-length;
+  min-height: $line-length;
   background-color: $line-color;
   margin: 0 auto;
+  flex-grow: 1;
 }
 
 // 分支容器
 .branch-wrapper {
-  // border-top: $line-size solid $line-color;
-  // border-bottom: $line-size solid $line-color;
   display: inline-flex;
   position: relative;
+  margin: 0 auto;
+
   &::before,&::after {
     content: '';
     position: absolute;
@@ -54,3 +51,30 @@ $node-wrapper-size: 100px; // 节点大小
   &::after {bottom: 0;}
 }
 
+// 圆节点
+.c-circle {
+  width:50px;
+  height:50px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: orangered;
+  color: #fff;
+  z-index: 1;
+}
+.c-start {
+  background-color: rgb(60, 230, 60);
+}
+.c-if {
+  background-color: rgb(213, 255, 60);
+}
+.c-other {
+  background-color: rgba(228, 221, 199);
+}
+.c-switch {
+  background-color: aqua;
+}
+.c-end {
+  background-color: rgb(255, 87, 87);
+}

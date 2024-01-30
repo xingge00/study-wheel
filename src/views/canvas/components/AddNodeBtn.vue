@@ -1,13 +1,42 @@
 
 <script setup>
+import { inject, useAttrs } from 'vue'
+const props = defineProps({
+  endLine: {
+    type: Boolean,
+    default: true,
+  },
+})
 const emits = defineEmits(['addNode'])
+const attrs = useAttrs()
+
+const addNodeDialogRef = inject('addNodeDialogRef')
+
+// 获取元素相对于canvas-main的位置
+const getPositionByCanvas = (el) => {
+  if (el.id === 'canvas-main' || !el) {
+    return { x: 0, y: 0 }
+  }
+  const parentPos = getPositionByCanvas(el.offsetParent)
+  return {
+    x: parentPos.x + el.offsetLeft,
+    y: parentPos.y + el.offsetTop,
+  }
+}
+
+const openDialog = (e) => {
+  console.log(e.target)
+  const { x: domX, y: domY } = getPositionByCanvas(e.target)
+  addNodeDialogRef.value.show({ x: e.offsetX + domX, y: e.offsetY + domY })
+  // emits('addNode')
+}
 </script>
 
 <template>
-  <div class="add-node" @click.stop="emits('addNode')">
+  <div class="add-node" v-bind="attrs" @click.stop="openDialog">
     +
   </div>
-  <div class="line"></div>
+  <div v-if="endLine" class="line"></div>
 </template>
 
 <style lang="scss" scoped>
@@ -23,5 +52,6 @@ $add-size: 20px;
   cursor: pointer;
   font-weight: bold;
   margin:0 auto;
+  z-index: 1;
 }
 </style>

@@ -4,37 +4,46 @@ import { computed } from 'vue'
 import RenderList from '../RenderList.vue'
 import AddNodeBtn from '../AddNodeBtn.vue'
 const props = defineProps({
-  node: {
+  modelValue: {
     type: Object,
     default: () => ({}),
   },
 })
-const branchList = computed(() => props.node.branch || [])
+const emits = defineEmits(['update:modelValue'])
+const branchList = computed({
+  get: () => props.modelValue.branch,
+  set: val => emits('update:modelValue', { ...props.modelValue, branch: val }),
+})
 const handleAddNode = () => {
-  if (!props.node.branch) props.node.branch = []
-  props.node.branch.push({
-    id: Date.now(),
-    type: 'if',
-  })
+  branchList.value.push([])
 }
 </script>
 
 <template>
   <div class="node-wrapper">
-    <div class="c-circle switch">
+    <div class="c-circle c-switch">
       switch
     </div>
     <div class="line"></div>
-    <AddNodeBtn @addNode="handleAddNode"></AddNodeBtn>
+    <AddNodeBtn class="on-bottom" :end-line="false" @addNode="handleAddNode"></AddNodeBtn>
   </div>
-  <div class="branch-wrapper">
-    <RenderList v-for="(nodeList, idx) in branchList" :key="idx" :node-list="nodeList"></RenderList>
+  <div class="branch-wrapper branch-wrapper-width" :style="{ '--var-branch-count': branchList?.length || 1 }">
+    <RenderList v-for="(nodeList, idx) in branchList" :key="idx" v-model="branchList[idx]"></RenderList>
   </div>
-  <div class="line"></div>
 </template>
 
 <style lang="scss" scoped>
-.switch {
-  background-color: aqua;
+@import '@/styles/canvas.scss';
+.node-wrapper {
+  position: relative;
+  :deep(.on-bottom) {
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+.branch-wrapper-width {
+  width:calc(#{$node-wrapper-size} * var(--var-branch-count))
 }
 </style>
