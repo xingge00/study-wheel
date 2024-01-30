@@ -13,10 +13,6 @@ const nodeList = ref([
     type: 'if',
   },
   {
-    id: '122',
-    type: 'ifds',
-  },
-  {
     id: '2',
     type: 'switch',
     branch: [
@@ -35,11 +31,11 @@ const nodeList = ref([
       [],
     ],
   },
-  {
-    id: '3',
-    type: 'switch',
-    branch: [],
-  },
+  // {
+  //   id: '3',
+  //   type: 'switch',
+  //   branch: [],
+  // },
   {
     id: '4',
     type: 'aaa',
@@ -55,7 +51,7 @@ provide('addNodeDialogRef', addNodeDialogRef)
 </script>
 
 <template>
-  <div class="canvas-main" id="canvas-main">
+  <div id="canvas-main" class="canvas-main">
     <RenderList v-model="nodeList" :start-line="false"></RenderList>
     <AddNodeDialog ref="addNodeDialogRef"></AddNodeDialog>
   </div>

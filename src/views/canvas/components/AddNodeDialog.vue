@@ -1,16 +1,26 @@
 
 <script setup>
 import { defineExpose, ref } from 'vue'
+import nodeConfig from './nodeConfig'
 const position = ref({ x: 1, y: 1 })
 const visible = ref(false)
-const show = (pos) => {
-  console.log('pos', pos)
+
+let callBack
+const show = (pos, cb) => {
+  callBack = cb
   position.value = pos
   visible.value = true
 }
 const close = () => {
   visible.value = false
 }
+
+const handleSelect = (node) => {
+  close()
+  callBack(node)
+}
+
+const nodeList = ref(nodeConfig.filter(i => !['start', 'end'].includes(i.type)))
 
 defineExpose({
   show,
@@ -28,6 +38,15 @@ defineExpose({
     }
     "
   >
+    <div class="select-node-wrapper">
+      <component
+        :is="node.component"
+        v-for="node in nodeList"
+        :key="node.type"
+        :is-preview="true"
+        @click="() => handleSelect(node)"
+      ></component>
+    </div>
   </div>
 </template>
 
@@ -43,5 +62,10 @@ defineExpose({
   top: var(--var-dialog-top);
   z-index: 10;
   transition: all .25s ease;
+  .select-node-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: start;
+  }
 }
 </style>

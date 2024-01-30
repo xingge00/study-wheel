@@ -6,8 +6,12 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  addType: {
+    type: String,
+    default: 'node', // ['branch',node]
+  },
 })
-const emits = defineEmits(['addNode'])
+const emits = defineEmits(['toAdd'])
 const attrs = useAttrs()
 
 const addNodeDialogRef = inject('addNodeDialogRef')
@@ -24,16 +28,21 @@ const getPositionByCanvas = (el) => {
   }
 }
 
-const openDialog = (e) => {
-  console.log(e.target)
+const addNodeCallBack = (node) => {
+  emits('toAdd', node)
+}
+
+const handleClick = (e) => {
+  if (props.addType === 'branch') {
+    return emits('toAdd')
+  }
   const { x: domX, y: domY } = getPositionByCanvas(e.target)
-  addNodeDialogRef.value.show({ x: e.offsetX + domX, y: e.offsetY + domY })
-  // emits('addNode')
+  addNodeDialogRef.value.show({ x: e.offsetX + domX, y: e.offsetY + domY }, addNodeCallBack)
 }
 </script>
 
 <template>
-  <div class="add-node" v-bind="attrs" @click.stop="openDialog">
+  <div class="add-node" v-bind="attrs" @click.stop="handleClick">
     +
   </div>
   <div v-if="endLine" class="line"></div>

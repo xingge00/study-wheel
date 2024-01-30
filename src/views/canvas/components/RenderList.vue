@@ -19,8 +19,8 @@ const nodeList = computed({
   set: val => emits('update:modelValue', val),
 })
 
-const addNode = (idx) => {
-  const newNode = { id: Date.now(), type: 'text', content: '' }
+const addNode = (idx, node) => {
+  const newNode = { id: Date.now(), type: node.type, branch: [] }
   nodeList.value.splice(idx + 1, 0, newNode)
 }
 </script>
@@ -29,9 +29,9 @@ const addNode = (idx) => {
   <div class="render-list-wrapper">
     <template v-if="startLine">
       <div class="line"></div>
-      <AddNodeBtn @addNode="() => addNode(-1)"></AddNodeBtn>
+      <AddNodeBtn @toAdd="(node) => addNode(-1, node)"></AddNodeBtn>
     </template>
-    <RenderItem v-for="(node, idx) in nodeList" :key="node.id" v-model="nodeList[idx]" @addNode="() => addNode(idx)"></RenderItem>
+    <RenderItem v-for="(node, idx) in nodeList" :key="node.id" v-model="nodeList[idx]" @addNode="(node) => addNode(idx, node)"></RenderItem>
   </div>
 </template>
 

@@ -6,7 +6,7 @@
 <template>
   <div class="node-wrapper">
     <div class="c-circle c-other">
-      other
+      Error
     </div>
   </div>
 </template>
