@@ -3,6 +3,7 @@
 import { computed } from 'vue'
 import RenderItem from './RenderItem.vue'
 import AddNodeBtn from './AddNodeBtn.vue'
+import SubBtn from './SubBtn.vue'
 const props = defineProps({
   modelValue: {
     type: Array,
@@ -12,8 +13,12 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  branchCount: {
+    type: Number,
+    default: 1,
+  },
 })
-const emits = defineEmits(['update:modelValue'])
+const emits = defineEmits(['update:modelValue', 'removeBranch'])
 const nodeList = computed({
   get: () => props.modelValue,
   set: val => emits('update:modelValue', val),
@@ -29,6 +34,7 @@ const addNode = (idx, node) => {
 <template>
   <div class="render-list-wrapper">
     <template v-if="startLine">
+      <SubBtn v-if="branchCount > 2" @click="emits('removeBranch')"></SubBtn>
       <div class="line"></div>
       <AddNodeBtn @toAdd="(node) => addNode(-1, node)"></AddNodeBtn>
     </template>

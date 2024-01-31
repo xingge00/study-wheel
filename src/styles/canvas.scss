@@ -12,6 +12,11 @@ $node-wrapper-size: 100px; // 节点大小
   flex-direction: column;
   justify-content: center;
   position: relative;
+  &:hover {
+    & > .sub-node {
+      opacity: 1;
+    }
+  }
 }
 
 // 节点容器

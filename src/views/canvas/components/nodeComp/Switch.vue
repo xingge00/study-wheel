@@ -33,6 +33,10 @@ const getColCount = (node) => {
   , 0)
 }
 const colCount = computed(() => getColCount(props.modelValue))
+
+const removeBranch = (idx) => {
+  bindBranch.value.splice(idx, 1)
+}
 </script>
 
 <template>
@@ -45,7 +49,13 @@ const colCount = computed(() => getColCount(props.modelValue))
     <div class="line"></div>
     <AddNodeBtn class="on-bottom" :end-line="false" add-type="branch" @toAdd="addBranch"></AddNodeBtn>
     <div class="branch-wrapper branch-wrapper-width" :style="{ '--var-col-count': colCount }">
-      <RenderList v-for="(nodeList, idx) in bindBranch" :key="idx" v-model="bindBranch[idx]"></RenderList>
+      <RenderList
+        v-for="(nodeList, idx) in bindBranch"
+        :key="idx"
+        v-model="bindBranch[idx]"
+        :branch-count="bindBranch.length"
+        @removeBranch="() => removeBranch(idx)"
+      ></RenderList>
     </div>
   </template>
 </template>

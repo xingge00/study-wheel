@@ -34,6 +34,16 @@ const nodeList = [
   },
 
 ]
+
+const MIN_BRANCH_COUNT = 2 // 节点的最少分支数量
+const formatBranch = (branchList, needCount = MIN_BRANCH_COUNT) => {
+  const temp = branchList.filter(Array.isArray)
+  if (!temp?.length) return new Array(needCount).fill([])
+  // needCount为零 无限制数量
+  if (!needCount) return temp.slice()
+  if (temp.length >= needCount) return temp.slice(0, needCount)
+  else return temp.slice().concat(new Array(needCount - temp.length).fill([]))
+}
 export class BaseNode {
   static id = 0
   constructor(type, other = { branchList: [] }) {
@@ -49,23 +59,23 @@ export class BaseNode {
       value: nodeList.some(node => node.type === type) ? type : 'error',
     })
     if (type === 'if') {
-      let temp = [[], []]
+      let temp = formatBranch(branchList)
       Object.defineProperty(this, 'branchList', {
         configurable: false,
         get: () => temp,
         set(val) {
-          if (val.length !== 2) throw new Error('分支数量必须为2')
+          if (val.length !== MIN_BRANCH_COUNT) throw new Error(`分支数量必须为${MIN_BRANCH_COUNT}`)
           temp = val
         },
       })
     }
     if (type === 'switch') {
-      let temp = [[], []]
+      let temp = formatBranch(branchList, 0)
       Object.defineProperty(this, 'branchList', {
         configurable: false,
         get: () => temp,
         set(val) {
-          if (val.length < 2) throw new Error('分支数量至少为2')
+          if (val.length < MIN_BRANCH_COUNT) throw new Error(`分支数量至少为${MIN_BRANCH_COUNT}`)
           temp = val
         },
       })

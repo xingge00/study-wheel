@@ -1,6 +1,6 @@
 
 <script setup>
-import { defineExpose, ref } from 'vue'
+import { ref } from 'vue'
 import { ClickOutside as vClickOutside } from 'element-plus'
 import nodeConfig from './nodeConfig'
 const position = ref({ x: 1, y: 1 })
