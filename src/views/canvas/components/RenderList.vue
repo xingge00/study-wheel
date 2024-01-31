@@ -20,7 +20,8 @@ const nodeList = computed({
 })
 
 const addNode = (idx, node) => {
-  const newNode = { id: Date.now(), type: node.type, branch: [] }
+  // const newNode = { id: Date.now(), type: node.type, branchList: [[],[]] }
+  const newNode = node.generateNode()
   nodeList.value.splice(idx + 1, 0, newNode)
 }
 </script>

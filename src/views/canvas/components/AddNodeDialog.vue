@@ -1,6 +1,7 @@
 
 <script setup>
 import { defineExpose, ref } from 'vue'
+import { ClickOutside as vClickOutside } from 'element-plus'
 import nodeConfig from './nodeConfig'
 const position = ref({ x: 1, y: 1 })
 const visible = ref(false)
@@ -29,12 +30,14 @@ defineExpose({
 </script>
 
 <template>
+  <!-- v-show="visible" -->
   <div
-    v-show="visible"
+    v-click-outside="close"
     class="add-node-dialog"
     :style="{
       '--var-dialog-left': `${position.x}px`,
       '--var-dialog-top': `${position.y}px`,
+      '--var-dialog-size': visible ? '300px' : '0',
     }
     "
   >
@@ -53,19 +56,21 @@ defineExpose({
 <style lang="scss" scoped>
 .add-node-dialog {
   position: absolute;
-  width: 300px;
-  height: 300px;
+  width: var(--var-dialog-size);
+  height: var(--var-dialog-size);
   background-color: #fff;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   border-radius: 5px;
   left: var(--var-dialog-left);
   top: var(--var-dialog-top);
   z-index: 10;
-  transition: all .25s ease;
+  overflow: hidden;
+  transition: all .2s ease;
   .select-node-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: start;
+    display: grid;
+    padding: 10px;
+    gap: 10px;
+    grid-template-columns: repeat(3,calc(33.3% - 10px))
   }
 }
 </style>

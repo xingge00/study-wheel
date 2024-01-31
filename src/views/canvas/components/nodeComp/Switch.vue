@@ -15,13 +15,24 @@ const props = defineProps({
 })
 const emits = defineEmits(['update:modelValue'])
 const bindBranch = computed({
-  get: () => props.modelValue.branch,
-  set: val => emits('update:modelValue', { ...props.modelValue, branch: val }),
+  get: () => props.modelValue.branchList,
+  set: val => emits('update:modelValue', { ...props.modelValue, branchList: val }),
 })
 const attrs = useAttrs()
 const addBranch = () => {
   bindBranch.value.push([])
 }
+
+// 获取当前节点占用列数
+const getColCount = (node) => {
+  if (!node) return 0
+  if (!(node?.branchList?.length)) return 1
+
+  return node.branchList.reduce((acc, cur) =>
+    acc + Math.max(...cur.map(i => getColCount(i)), 1)
+  , 0)
+}
+const colCount = computed(() => getColCount(props.modelValue))
 </script>
 
 <template>
@@ -33,7 +44,7 @@ const addBranch = () => {
   <template v-if="!isPreview">
     <div class="line"></div>
     <AddNodeBtn class="on-bottom" :end-line="false" add-type="branch" @toAdd="addBranch"></AddNodeBtn>
-    <div class="branch-wrapper branch-wrapper-width" :style="{ '--var-branch-count': bindBranch?.length || 1 }">
+    <div class="branch-wrapper branch-wrapper-width" :style="{ '--var-col-count': colCount }">
       <RenderList v-for="(nodeList, idx) in bindBranch" :key="idx" v-model="bindBranch[idx]"></RenderList>
     </div>
   </template>
@@ -51,6 +62,6 @@ const addBranch = () => {
   }
 }
 .branch-wrapper-width {
-  width:calc(#{$node-wrapper-size} * var(--var-branch-count))
+  width:calc(#{$node-wrapper-size} * var(--var-col-count))
 }
 </style>
