@@ -25,7 +25,7 @@ const nodeList = [
   {
     type: 'switch',
     component: markRaw(Switch),
-    generateNode: branchList => new BaseNode('switch', { branchList }),
+    generateNode: (branchList = [[], []]) => new BaseNode('switch', { branchList }),
   },
   {
     type: 'feat',
@@ -36,13 +36,14 @@ const nodeList = [
 ]
 
 const MIN_BRANCH_COUNT = 2 // 节点的最少分支数量
+/** 标准化分支数据 */
 const formatBranch = (branchList, needCount = MIN_BRANCH_COUNT) => {
-  const temp = branchList.filter(Array.isArray)
-  if (!temp?.length) return new Array(needCount).fill([])
+  const temp = branchList?.filter(Array.isArray)
+  if (!temp?.length) return new Array(needCount).fill(0).map(_ => [])
   // needCount为零 无限制数量
   if (!needCount) return temp.slice()
   if (temp.length >= needCount) return temp.slice(0, needCount)
-  else return temp.slice().concat(new Array(needCount - temp.length).fill([]))
+  else return temp.slice().concat(new Array(needCount - temp.length).fill(0).map(_ => []))
 }
 export class BaseNode {
   static id = 0
@@ -80,12 +81,6 @@ export class BaseNode {
         },
       })
     }
-  }
-
-  toString() {
-    // return Object.entries(this).map(([key, val]) => `${key}: ${val}`)
-    // return this
-    return 'BaseNode'
   }
 }
 
