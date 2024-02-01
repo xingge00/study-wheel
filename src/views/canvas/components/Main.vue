@@ -4,57 +4,12 @@ import { provide, ref } from 'vue'
 import RenderList from './RenderList.vue'
 import AddNodeDialog from './AddNodeDialog.vue'
 import { BaseNode } from '@/views/canvas/components/nodeConfig.js'
-// const nodeList = ref([
-//   {
-//     id: '0',
-//     type: 'start',
-//   },
-//   {
-//     id: '1',
-//     type: 'if',
-//   },
-//   {
-//     id: '2',
-//     type: 'switch',
-//     branchList: [
-//       [
-//         {
-//           id: '2-1-2',
-//           type: 'aaa',
-//         },
-
-//       ],
-//       [
-//         {
-//           id: '2-2-1',
-//           type: 'aaa',
-//         },
-//       ],
-//       [],
-//     ],
-//   },
-//   // {
-//   //   id: '3',
-//   //   type: 'switch',
-//   //   branchList: [],
-//   // },
-//   {
-//     id: '4',
-//     type: 'aaa',
-//   },
-//   {
-//     id: '999',
-//     type: 'end',
-//   },
-// ])
 
 const nodeList = ref([
   new BaseNode('start'),
   new BaseNode('feat'),
   new BaseNode('if', {
-    branchList: [
-
-    ],
+    branchList: [],
   }),
   new BaseNode('switch', {
     branchList: [
@@ -73,6 +28,8 @@ console.log(nodeList.value)
 
 const addNodeDialogRef = ref(null)
 provide('addNodeDialogRef', addNodeDialogRef)
+const hoverStack = ref([])
+provide('hoverStack', hoverStack)
 </script>
 
 <template>

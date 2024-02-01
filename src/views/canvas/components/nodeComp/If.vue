@@ -1,7 +1,8 @@
 
 <script setup>
 import { computed, useAttrs } from 'vue'
-import RenderList from '../RenderList.vue'
+import BranchRender from '../BranchRender.vue'
+// import RenderList from '../RenderList.vue'
 const props = defineProps({
   modelValue: {
     type: Object,
@@ -37,13 +38,18 @@ const colCount = computed(() => getColCount(props.modelValue))
       if
     </div>
   </div>
-  <template v-if="!isPreview">
+  <!-- <template v-if="!isPreview">
     <div class="line"></div>
     <div class="branch-wrapper branch-wrapper-width" :style="{ '--var-col-count': colCount }">
       <RenderList v-for="(nodeList, idx) in bindBranch" :key="idx" v-model="bindBranch[idx]">
       </RenderList>
     </div>
-  </template>
+  </template> -->
+  <BranchRender
+    v-if="!isPreview"
+    v-model="bindBranch"
+    :cur-node="modelValue"
+  ></BranchRender>
 </template>
 
 <style lang="scss" scoped>

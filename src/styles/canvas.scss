@@ -19,6 +19,14 @@ $node-wrapper-size: 100px; // 节点大小
   }
 }
 
+.node-box {
+  border: 1px solid transparent;
+  box-sizing: border-box;
+  &.hover-node {
+    border-color: rgb(253, 131, 131);
+    border-radius: 5px;
+  }
+}
 // 节点容器
 .node-wrapper {
   display: flex;
@@ -43,14 +51,20 @@ $node-wrapper-size: 100px; // 节点大小
   position: relative;
   margin: 0 auto;
 
+  &.branch-wrapper-width {
+    width:calc(#{$node-wrapper-size} * var(--var-col-count))
+  }
+
   &::before,&::after {
     content: '';
     position: absolute;
-    width: calc(100% - #{$node-wrapper-size});
     height: $line-size;
     background-color: $line-color;
-    left: 50%;
-    transform: translateX(-50%);
+
+    // 默认居中显示 实际相对应节点计算得出
+    width: calc(100% - #{$node-wrapper-size} / 2 * (var(--var-first-branch-col-count) + var(--var-last-branch-col-count)));
+    left: calc(#{$node-wrapper-size} / 2 * var(--var-first-branch-col-count));
+    transform: none;
   }
   &::before {top: 0;}
   &::after {bottom: 0;}
@@ -67,6 +81,7 @@ $node-wrapper-size: 100px; // 节点大小
   background-color: orangered;
   color: #fff;
   z-index: 1;
+  cursor: pointer;
 }
 .c-start {
   background-color: rgb(60, 230, 60);
