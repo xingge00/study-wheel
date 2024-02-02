@@ -29,6 +29,20 @@ const addNode = (idx, node) => {
   nodeList.value.splice(idx + 1, 0, newNode)
 }
 
+const moveTo = (sourceNode, sourceBranch, idx, node) => {
+  const sourceIdx = sourceBranch.findIndex(i => i === sourceNode)
+  // 同一条分支节点移动
+  if (sourceNode === nodeList.value) {
+    const temp = nodeList.value[sourceIdx]
+    nodeList.value[sourceIdx] = nodeList.value[idx]
+    nodeList.value[idx] = temp
+  } else {
+    // 跨分支节点移动
+    sourceBranch.splice(sourceIdx, 1)
+    nodeList.value.splice(idx + 1, 0, sourceNode)
+  }
+}
+
 const subNode = (idx) => {
   nodeList.value.splice(idx, 1)
 }
@@ -39,6 +53,7 @@ const subNode = (idx) => {
     <template v-if="startLine">
       <SubBtn v-if="branchCount > 2" @click="emits('removeBranch')"></SubBtn>
       <div class="line"></div>
+      未实现
       <AddNodeBtn @toAdd="(node) => addNode(-1, node)"></AddNodeBtn>
     </template>
     <RenderItem
@@ -48,6 +63,7 @@ const subNode = (idx) => {
       v-model:node-list="nodeList"
       @addNode="(node) => addNode(idx, node)"
       @subNode="() => subNode(idx)"
+      @moveTo="(sNode, sBranch) => moveTo(sNode, sBranch, idx, node)"
     ></RenderItem>
   </div>
 </template>

@@ -14,7 +14,7 @@ const props = defineProps({
     default: () => [],
   },
 })
-const emits = defineEmits(['update:modelValue', 'addNode', 'subNode', 'update:nodeList'])
+const emits = defineEmits(['update:modelValue', 'update:nodeList', 'addNode', 'subNode', 'moveTo'])
 const node = computed({
   get: () => props.modelValue,
   set: val => emits('update:modelValue', val),
@@ -33,30 +33,36 @@ const mouseenter = () => hoverStack.value.unshift(node.value)
 const mouseleave = () => hoverStack.value.shift()
 
 // 抓
-const dragstart = (e) => {
-  console.log('dragstart')
-
-  e.dataTransfer.effectAllowed = 'move'
+const dragstart = (ev) => {
+  window.__custom_drop_data = {
+    node: node.value,
+    curBranch: curBranch.value,
+    target: null,
+  }
+  console.log(ev)
+  console.log('dragstart', window.__custom_drop_data)
 }
 
-const ondragend = (e) => {
+const ondragend = () => {
   console.log('ondragend')
-
-  if (!window.__custom_drop_instance) return
-  window.__custom_drop_instance.emit('addNode', node.value)
 }
 
 // 放
 const instance = getCurrentInstance()
 const drop = () => {
-  console.log('drop')
+  if (window.__custom_drop_data.target !== instance) return
+
+  emits('moveTo', window.__custom_drop_data.node, window.__custom_drop_data.curBranch)
+  window.__custom_drop_data = null
 }
-const dragenter = (e) => {
-  window.__custom_drop_instance = instance
-  console.log('dragenter')
+const dragenter = () => {
+  // debugger
+
+  window.__custom_drop_data.target = instance
+  console.log('dragenter', window.__custom_drop_data)
 }
-const dragleave = (e) => {
-  window.__custom_drop_instance = null
+const dragleave = () => {
+  window.__custom_drop_data.target = null
   console.log('dragleave')
 }
 </script>
@@ -72,7 +78,7 @@ const dragleave = (e) => {
     @mouseenter="mouseenter"
     @mouseleave="mouseleave"
 
-    @dragstart="dragstart"
+    @dragstart.stop="dragstart"
     @dragend="ondragend"
   >
     <component :is="nodeComponent" v-model="node">
@@ -81,13 +87,15 @@ const dragleave = (e) => {
   </div>
   <template v-if="node.type !== 'end'">
     <div class="line"></div>
+
     <AddNodeBtn
       :droppable="true"
       @toAdd="(node) => emits('addNode', node)"
 
+      @dragover.prevent=""
       @drop="drop"
-      @dragenter.prevent="dragenter"
-      @dragleave.prevent="dragleave"
+      @dragenter="dragenter"
+      @dragleave="dragleave"
     ></AddNodeBtn>
   </template>
 </template>

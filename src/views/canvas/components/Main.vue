@@ -8,9 +8,6 @@ import { BaseNode } from '@/views/canvas/components/nodeConfig.js'
 const nodeList = ref([
   new BaseNode('start'),
   new BaseNode('feat'),
-  new BaseNode('if', {
-    branchList: [],
-  }),
   new BaseNode('switch', {
     branchList: [
       [new BaseNode('feat')],
