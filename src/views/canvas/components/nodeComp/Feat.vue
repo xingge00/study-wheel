@@ -5,6 +5,7 @@
 
 <template>
   <div class="node-wrapper">
+    <slot></slot>
     <div class="c-circle c-feat">
       Feat
     </div>

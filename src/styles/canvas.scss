@@ -6,12 +6,20 @@ $line-length: 20px; // 连线长度
 $node-wrapper-size: 100px; // 节点大小
 
 .render-list-wrapper {
+  margin: 0 auto;
   display: inline-flex;
   text-align: center;
   min-width: 100px;
   flex-direction: column;
   justify-content: center;
   position: relative;
+
+  & > .sub-node {
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    opacity: 0;
+  }
   &:hover {
     & > .sub-node {
       opacity: 1;
@@ -21,14 +29,30 @@ $node-wrapper-size: 100px; // 节点大小
 
 .node-box {
   border: 1px solid transparent;
+  transition: border-color,transform .5s;
   box-sizing: border-box;
+  &:hover {
+    transform: scale(1.02);
+  }
+
+  & > .node-wrapper > .sub-node {
+    right: 10px;
+    top: 0;
+    opacity: 0;
+  }
   &.hover-node {
-    border-color: rgb(253, 131, 131);
-    border-radius: 5px;
+    &.border-box {
+      border-color: rgb(253, 131, 131);
+      border-radius: 5px;
+    }
+    & > .node-wrapper > .sub-node {
+      opacity: 1;
+    }
   }
 }
 // 节点容器
 .node-wrapper {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;

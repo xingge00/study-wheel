@@ -26,15 +26,10 @@ $add-size: 14px;
   text-align: center;
   cursor: pointer;
   font-weight: bold;
-  margin:0 auto;
-  z-index: 1;
+  z-index: 2;
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  // top: calc($add-size / -2);
-  top: 0;
+  // 具体定位在canvas.scss
 
-  opacity: 0;
   transition: all .25s ease-in-out;
 }
 </style>

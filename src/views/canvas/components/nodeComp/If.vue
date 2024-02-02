@@ -34,17 +34,11 @@ const colCount = computed(() => getColCount(props.modelValue))
 
 <template>
   <div class="node-wrapper" v-bind="attrs">
+    <slot></slot>
     <div class="c-circle c-if">
       if
     </div>
   </div>
-  <!-- <template v-if="!isPreview">
-    <div class="line"></div>
-    <div class="branch-wrapper branch-wrapper-width" :style="{ '--var-col-count': colCount }">
-      <RenderList v-for="(nodeList, idx) in bindBranch" :key="idx" v-model="bindBranch[idx]">
-      </RenderList>
-    </div>
-  </template> -->
   <BranchRender
     v-if="!isPreview"
     v-model="bindBranch"

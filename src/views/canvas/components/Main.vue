@@ -16,9 +16,6 @@ const nodeList = ref([
       [new BaseNode('feat')],
       [new BaseNode('feat')],
       [new BaseNode('feat')],
-      [new BaseNode('feat')],
-      [new BaseNode('feat')],
-      [new BaseNode('feat')],
     ],
   }),
   new BaseNode('end'),
@@ -26,8 +23,10 @@ const nodeList = ref([
 
 console.log(nodeList.value)
 
+// 添加节点弹窗
 const addNodeDialogRef = ref(null)
 provide('addNodeDialogRef', addNodeDialogRef)
+// hover栈：用于记录当前鼠标悬停的节点
 const hoverStack = ref([])
 provide('hoverStack', hoverStack)
 </script>

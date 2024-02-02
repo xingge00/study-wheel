@@ -30,6 +30,7 @@ const removeBranch = (idx) => {
 
 <template>
   <div class="node-wrapper" v-bind="attrs">
+    <slot></slot>
     <div class="c-circle c-switch">
       switch
     </div>

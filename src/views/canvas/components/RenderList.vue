@@ -28,6 +28,10 @@ const addNode = (idx, node) => {
   const newNode = node.generateNode()
   nodeList.value.splice(idx + 1, 0, newNode)
 }
+
+const subNode = (idx) => {
+  nodeList.value.splice(idx, 1)
+}
 </script>
 
 <template>
@@ -37,7 +41,14 @@ const addNode = (idx, node) => {
       <div class="line"></div>
       <AddNodeBtn @toAdd="(node) => addNode(-1, node)"></AddNodeBtn>
     </template>
-    <RenderItem v-for="(node, idx) in nodeList" :key="node.id" v-model="nodeList[idx]" @addNode="(node) => addNode(idx, node)"></RenderItem>
+    <RenderItem
+      v-for="(node, idx) in nodeList"
+      :key="node.id"
+      v-model="nodeList[idx]"
+      v-model:node-list="nodeList"
+      @addNode="(node) => addNode(idx, node)"
+      @subNode="() => subNode(idx)"
+    ></RenderItem>
   </div>
 </template>
 
