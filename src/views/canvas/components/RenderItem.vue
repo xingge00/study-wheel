@@ -26,44 +26,56 @@ const curBranch = computed({
 })
 
 const nodeComponent = computed(() => (nodeConfig.find(i => i.type === node.value.type) || ErrorItem).component)
-
 const hoverStack = inject('hoverStack')
+const dragConf = inject('dragConf')
+
 const curHoverNode = computed(() => hoverStack.value[0])
 const mouseenter = () => hoverStack.value.unshift(node.value)
 const mouseleave = () => hoverStack.value.shift()
 
-// 抓
+// 拖动抓取
 const dragstart = (ev) => {
   window.__custom_drop_data = {
     node: node.value,
     curBranch: curBranch.value,
     target: null,
   }
-  console.log(ev)
-  console.log('dragstart', window.__custom_drop_data)
+  const banNodeList = []
+  const getAllChildNodes = (node, isStart) => {
+    !isStart && banNodeList.push(node)
+    if (!node?.branchList?.length) return
+    node.branchList.forEach((branch) => {
+      banNodeList.push(branch)
+      branch.forEach(i => getAllChildNodes(i))
+    })
+  }
+  getAllChildNodes(node.value, true)
+  console.log('banNodeList', banNodeList)
+  dragConf.value.dragFlag = true
+  dragConf.value.banNodeList = banNodeList
+}
+const dragend = () => {
+  setTimeout(() => {
+    dragConf.value.dragFlag = false
+    dragConf.value.banNodeList = []
+  }, 100)
 }
 
-const ondragend = () => {
-  console.log('ondragend')
-}
-
-// 放
+// 拖动放置
 const instance = getCurrentInstance()
 const drop = () => {
-  if (window.__custom_drop_data.target !== instance) return
+  console.log('dragConf.value.banNodeList', dragConf.value.banNodeList)
+  if (dragConf.value.banNodeList.includes(node)) return
 
+  if (window.__custom_drop_data.target !== instance) return
   emits('moveTo', window.__custom_drop_data.node, window.__custom_drop_data.curBranch)
   window.__custom_drop_data = null
 }
 const dragenter = () => {
-  // debugger
-
   window.__custom_drop_data.target = instance
-  console.log('dragenter', window.__custom_drop_data)
 }
 const dragleave = () => {
   window.__custom_drop_data.target = null
-  console.log('dragleave')
 }
 </script>
 
@@ -77,9 +89,8 @@ const dragleave = () => {
     }"
     @mouseenter="mouseenter"
     @mouseleave="mouseleave"
-
     @dragstart.stop="dragstart"
-    @dragend="ondragend"
+    @dragend="dragend"
   >
     <component :is="nodeComponent" v-model="node">
       <SubBtn @toSub="emits('subNode')"></SubBtn>
@@ -87,11 +98,11 @@ const dragleave = () => {
   </div>
   <template v-if="node.type !== 'end'">
     <div class="line"></div>
-
+    {{ dragConf.dragFlag && !dragConf.banNodeList.includes(node) }}
     <AddNodeBtn
-      :droppable="true"
+      :class="{ canDropFalg: dragConf.dragFlag && !dragConf.banNodeList.includes(node) }"
+      :dropgable="dragConf.dragFlag && !dragConf.banNodeList.includes(node)"
       @toAdd="(node) => emits('addNode', node)"
-
       @dragover.prevent=""
       @drop="drop"
       @dragenter="dragenter"

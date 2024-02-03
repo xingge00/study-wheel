@@ -26,6 +26,12 @@ provide('addNodeDialogRef', addNodeDialogRef)
 // hover栈：用于记录当前鼠标悬停的节点
 const hoverStack = ref([])
 provide('hoverStack', hoverStack)
+// 不能被拖动放置的节点
+const dragConf = ref({
+  banDropNodeList: [],
+  dragFlag: false,
+})
+provide('dragConf', dragConf)
 </script>
 
 <template>
@@ -37,7 +43,7 @@ provide('hoverStack', hoverStack)
 
 <style lang="scss" scoped>
 .canvas-main {
-  padding: 20px 0;
+  padding: 20px;
   box-sizing: border-box;
   width:100%;
   height: 100%;
