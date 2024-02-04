@@ -1,9 +1,12 @@
 
 <script setup>
+import { inject } from 'vue'
 const emits = defineEmits(['toSub'])
 
+const hoverStack = inject('hoverStack')
 const handleClick = (e) => {
-  return emits('toSub')
+  hoverStack.value = []
+  emits('toSub')
 }
 </script>
 

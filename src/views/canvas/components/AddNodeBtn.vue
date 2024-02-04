@@ -63,7 +63,7 @@ $add-size: 20px;
   margin:0 auto;
   z-index: 1;
   transition: all 0.3s;
-  &.canDropFalg {
+  &.canDropFlag {
     box-shadow: 0 0 30px #858585;
     transform: scale(1.5);
   }

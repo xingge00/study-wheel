@@ -1,9 +1,21 @@
 
 $line-color: #ccc; // 连线颜色
 $line-size: 2px; // 连线粗细
-$line-length: 20px; // 连线长度
+$line-length: 12px; // 连线长度
 
 $node-wrapper-size: 100px; // 节点大小
+
+// hover的盒子样式
+%hover-box {
+  border-color: #fafafa;
+  background-color: rgba(255,255,255,.35);
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+%no-hover-box {
+  border-color: transparent;
+  box-shadow: none;
+  background-color: transparent;
+}
 
 .render-list-wrapper {
   margin: 0 auto;
@@ -14,9 +26,16 @@ $node-wrapper-size: 100px; // 节点大小
   justify-content: center;
   position: relative;
 
+  &.hover-branch {
+    @extend %hover-box;
+  }
+  .can-drop-branch {
+    border: 1px dashed green;
+  }
+
   & > .sub-node {
     left: 50%;
-    top: 0;
+    top: -3px;
     transform: translateX(-50%);
     opacity: 0;
   }
@@ -27,24 +46,13 @@ $node-wrapper-size: 100px; // 节点大小
   }
 }
 
-// hover的盒子样式
-%hover-box {
-  // border-color: rgb(253, 131, 131);
-  border-color: #fafafa;
-  background-color: rgba(255,255,255,.35);
-  box-shadow: 0 0 20px #b1b1b1;
-}
-%no-hover-box {
-  border-color: transparent;
-  box-shadow: none;
-  background-color: transparent;
-}
-
 .node-box {
   border: 1px solid transparent;
   transition: all .5s;
   box-sizing: border-box;
   border-radius: 5px;
+  display: inline-flex;
+  flex-direction: column;
   &:hover {
     transform: scale(1.02);
   }

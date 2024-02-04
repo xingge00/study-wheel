@@ -82,6 +82,20 @@ export class BaseNode {
       })
     }
   }
+
+  toString() {
+    return `{${Object.getOwnPropertyNames(this).reduce((acc, key) => {
+      let result = `${acc},${key}:`
+      if (Array.isArray(this[key])) {
+        result += `[${this[key].toString()}]`
+      } else if (typeof this[key] === 'number') {
+        result += `${this[key].toString()}`
+      } else {
+        result += `"${this[key].toString()}"`
+      }
+      return result
+    }, '').slice(1)}}`
+  }
 }
 
 export const ErrorItem = {

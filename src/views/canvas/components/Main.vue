@@ -1,6 +1,6 @@
 
 <script setup>
-import { provide, ref } from 'vue'
+import { provide, ref, watch } from 'vue'
 import RenderList from './RenderList.vue'
 import AddNodeDialog from './AddNodeDialog.vue'
 import { BaseNode } from '@/views/canvas/components/nodeConfig.js'
@@ -30,6 +30,7 @@ provide('hoverStack', hoverStack)
 const dragConf = ref({
   banDropNodeList: [], // 不能被拖动放置的节点
   dragFlag: false, // 是否处于拖动状态
+  customDragData: null, // 自定义拖动数据
 })
 provide('dragConf', dragConf)
 // 选中节点
@@ -40,6 +41,7 @@ provide('activateNode', activateNode)
 <template>
   <div id="canvas-main" class="canvas-main" @click.capture="activateNode = null">
     <RenderList v-model="nodeList" :start-line="false"></RenderList>
+    <!-- 1{{ hoverStack.map(i => i.toString()).length }} 2{{ dragConf.banDropNodeList }} 3{{ activateNode }} -->
     <AddNodeDialog ref="addNodeDialogRef"></AddNodeDialog>
   </div>
 </template>

@@ -1,6 +1,6 @@
 
 <script setup>
-import { computed, getCurrentInstance, inject } from 'vue'
+import { computed, getCurrentInstance, inject, toRaw } from 'vue'
 import AddNodeBtn from './AddNodeBtn.vue'
 import SubBtn from './SubBtn.vue'
 import nodeConfig, { ErrorItem } from './nodeConfig'
@@ -36,51 +36,51 @@ const mouseenter = () => hoverStack.value.unshift(node.value)
 const mouseleave = () => hoverStack.value.shift()
 
 // 拖动抓取
-const dragstart = (ev) => {
-  window.__custom_drop_data = {
+const dragstart = () => {
+  dragConf.value.customDragData = {
     node: node.value,
     curBranch: curBranch.value,
     target: null,
   }
-  const banNodeList = []
+  const banDropNodeList = []
   const getAllChildNodes = (node, isStart) => {
-    !isStart && banNodeList.push(node)
+    !isStart && banDropNodeList.push(node)
     if (!node?.branchList?.length) return
     node.branchList.forEach((branch) => {
-      banNodeList.push(branch)
+      banDropNodeList.push(branch)
       branch.forEach(i => getAllChildNodes(i))
     })
   }
   getAllChildNodes(node.value, true)
-  console.log('banNodeList', banNodeList)
   dragConf.value.dragFlag = true
-  dragConf.value.banNodeList = banNodeList
+  dragConf.value.banDropNodeList = banDropNodeList
 }
 const dragend = () => {
-  setTimeout(() => {
-    dragConf.value.dragFlag = false
-    dragConf.value.banNodeList = []
-  }, 100)
+  dragConf.value.dragFlag = false
+  dragConf.value.banDropNodeList = []
 }
 
 // 拖动放置
 const instance = getCurrentInstance()
 const drop = () => {
-  console.log('dragConf.value.banNodeList', dragConf.value.banNodeList)
-  if (dragConf.value.banNodeList.includes(node)) return
+  if (!dragConf.value.customDragData) return
+  if (dragConf.value.banDropNodeList.includes(node)) return
 
-  if (window.__custom_drop_data.target !== instance) return
-  emits('moveTo', window.__custom_drop_data.node, window.__custom_drop_data.curBranch)
-  window.__custom_drop_data = null
+  if (toRaw(dragConf.value.customDragData.target) !== instance) return
+  emits('moveTo', dragConf.value.customDragData.node, dragConf.value.customDragData.curBranch)
+  dragConf.value.customDragData = null
+  hoverStack.value = []
 }
 const dragenter = () => {
-  window.__custom_drop_data.target = instance
+  if (!dragConf.value.customDragData) return
+  dragConf.value.customDragData.target = instance
 }
 const dragleave = () => {
-  window.__custom_drop_data.target = null
+  if (!dragConf.value.customDragData) return
+  dragConf.value.customDragData.target = null
 }
 const dragover = (e) => {
-  if (dragConf.value.dragFlag && !dragConf.value.banNodeList.includes(node.value)) {
+  if (dragConf.value.dragFlag && !dragConf.value.banDropNodeList.includes(node.value)) {
     e.preventDefault()
   }
 }
@@ -111,7 +111,7 @@ const clickNode = () => {
   <template v-if="node.type !== 'end'">
     <div class="line"></div>
     <AddNodeBtn
-      :class="{ canDropFalg: dragConf.dragFlag && !dragConf.banNodeList.includes(node) }"
+      :class="{ canDropFlag: dragConf.dragFlag && !dragConf.banDropNodeList.includes(node) }"
       @toAdd="(node) => emits('addNode', node)"
       @dragover="dragover"
       @drop="drop"

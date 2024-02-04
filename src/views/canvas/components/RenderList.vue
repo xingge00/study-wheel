@@ -1,6 +1,6 @@
 
 <script setup>
-import { computed, getCurrentInstance, inject } from 'vue'
+import { computed, getCurrentInstance, inject, toRaw, useAttrs } from 'vue'
 import RenderItem from './RenderItem.vue'
 import AddNodeBtn from './AddNodeBtn.vue'
 import SubBtn from './SubBtn.vue'
@@ -19,11 +19,13 @@ const props = defineProps({
   },
 })
 const emits = defineEmits(['update:modelValue', 'removeBranch'])
+const attrs = useAttrs()
 const nodeList = computed({
   get: () => props.modelValue,
   set: val => emits('update:modelValue', val),
 })
 const dragConf = inject('dragConf')
+const hoverStack = inject('hoverStack')
 
 const addNode = (idx, node) => {
   const newNode = node.generateNode()
@@ -57,34 +59,38 @@ const subNode = (idx) => {
 // 拖动放置
 const instance = getCurrentInstance()
 const drop = () => {
-  if (dragConf.value.banNodeList.includes(nodeList)) return
+  if (!dragConf.value.customDragData) return
+  if (dragConf.value.banDropNodeList.includes(nodeList)) return
 
-  if (window.__custom_drop_data.target !== instance) return
+  if (toRaw(dragConf.value.customDragData.target) !== instance) return
 
-  moveTo(window.__custom_drop_data.node, window.__custom_drop_data.curBranch, -1)
-  window.__custom_drop_data = null
+  moveTo(dragConf.value.customDragData.node, dragConf.value.customDragData.curBranch, -1)
+  hoverStack.value = []
+  dragConf.value.customDragData = null
 }
 const dragenter = () => {
-  window.__custom_drop_data.target = instance
+  if (!dragConf.value.customDragData) return
+  dragConf.value.customDragData.target = instance
 }
 const dragleave = () => {
-  window.__custom_drop_data.target = null
+  if (!dragConf.value.customDragData) return
+  dragConf.value.customDragData.target = null
 }
 const dragover = (e) => {
-  if (dragConf.value.dragFlag && !dragConf.value.banNodeList.includes(nodeList.value)) {
+  if (dragConf.value.dragFlag && !dragConf.value.banDropNodeList.includes(nodeList.value)) {
     e.preventDefault()
   }
 }
 </script>
 
 <template>
-  <div class="render-list-wrapper">
+  <div class="render-list-wrapper" v-bind="attrs">
     <template v-if="startLine">
       <SubBtn v-if="branchCount > 2" @click="emits('removeBranch')"></SubBtn>
       <div class="line"></div>
       <AddNodeBtn
-        :class="{ canDropFalg: dragConf.dragFlag && !dragConf.banNodeList.includes(nodeList) }"
-        :droppable="dragConf.dragFlag && !dragConf.banNodeList.includes(nodeList)"
+        :class="{ canDropFlag: dragConf.dragFlag && !dragConf.banDropNodeList.includes(nodeList) }"
+        :droppable="dragConf.dragFlag && !dragConf.banDropNodeList.includes(nodeList)"
         @toAdd="(node) => addNode(-1, node)"
         @dragover="dragover"
         @drop="drop"
