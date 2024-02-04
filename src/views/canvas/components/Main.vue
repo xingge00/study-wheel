@@ -26,16 +26,19 @@ provide('addNodeDialogRef', addNodeDialogRef)
 // hover栈：用于记录当前鼠标悬停的节点
 const hoverStack = ref([])
 provide('hoverStack', hoverStack)
-// 不能被拖动放置的节点
+// 拖动配置
 const dragConf = ref({
-  banDropNodeList: [],
-  dragFlag: false,
+  banDropNodeList: [], // 不能被拖动放置的节点
+  dragFlag: false, // 是否处于拖动状态
 })
 provide('dragConf', dragConf)
+// 选中节点
+const activateNode = ref(null)
+provide('activateNode', activateNode)
 </script>
 
 <template>
-  <div id="canvas-main" class="canvas-main">
+  <div id="canvas-main" class="canvas-main" @click.capture="activateNode = null">
     <RenderList v-model="nodeList" :start-line="false"></RenderList>
     <AddNodeDialog ref="addNodeDialogRef"></AddNodeDialog>
   </div>

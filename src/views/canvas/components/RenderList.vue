@@ -30,7 +30,7 @@ const addNode = (idx, node) => {
   nodeList.value.splice(idx + 1, 0, newNode)
 }
 
-const moveTo = (sourceNode, sourceBranch, idx, node) => {
+const moveTo = (sourceNode, sourceBranch, idx) => {
   const sourceIdx = sourceBranch.findIndex(i => i === sourceNode)
   // 同一条分支节点移动
   if (sourceBranch === nodeList.value) {
@@ -61,7 +61,7 @@ const drop = () => {
 
   if (window.__custom_drop_data.target !== instance) return
 
-  moveTo(window.__custom_drop_data.node, window.__custom_drop_data.curBranch, 0)
+  moveTo(window.__custom_drop_data.node, window.__custom_drop_data.curBranch, -1)
   window.__custom_drop_data = null
 }
 const dragenter = () => {
@@ -70,6 +70,11 @@ const dragenter = () => {
 const dragleave = () => {
   window.__custom_drop_data.target = null
 }
+const dragover = (e) => {
+  if (dragConf.value.dragFlag && !dragConf.value.banNodeList.includes(nodeList.value)) {
+    e.preventDefault()
+  }
+}
 </script>
 
 <template>
@@ -77,13 +82,11 @@ const dragleave = () => {
     <template v-if="startLine">
       <SubBtn v-if="branchCount > 2" @click="emits('removeBranch')"></SubBtn>
       <div class="line"></div>
-      {{ dragConf.dragFlag && !dragConf.banNodeList.includes(nodeList) }}
       <AddNodeBtn
         :class="{ canDropFalg: dragConf.dragFlag && !dragConf.banNodeList.includes(nodeList) }"
-        :dropgable="dragConf.dragFlag && !dragConf.banNodeList.includes(nodeList)"
+        :droppable="dragConf.dragFlag && !dragConf.banNodeList.includes(nodeList)"
         @toAdd="(node) => addNode(-1, node)"
-
-        @dragover.prevent=""
+        @dragover="dragover"
         @drop="drop"
         @dragenter="dragenter"
         @dragleave="dragleave"
@@ -96,6 +99,7 @@ const dragleave = () => {
       v-model:node-list="nodeList"
       @addNode="(node) => addNode(idx, node)"
       @subNode="() => subNode(idx)"
+
       @moveTo="(sNode, sBranch) => moveTo(sNode, sBranch, idx, node)"
     ></RenderItem>
   </div>

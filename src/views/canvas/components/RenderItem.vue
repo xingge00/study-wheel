@@ -13,6 +13,7 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+
 })
 const emits = defineEmits(['update:modelValue', 'update:nodeList', 'addNode', 'subNode', 'moveTo'])
 const node = computed({
@@ -28,6 +29,7 @@ const curBranch = computed({
 const nodeComponent = computed(() => (nodeConfig.find(i => i.type === node.value.type) || ErrorItem).component)
 const hoverStack = inject('hoverStack')
 const dragConf = inject('dragConf')
+const activateNode = inject('activateNode')
 
 const curHoverNode = computed(() => hoverStack.value[0])
 const mouseenter = () => hoverStack.value.unshift(node.value)
@@ -77,20 +79,30 @@ const dragenter = () => {
 const dragleave = () => {
   window.__custom_drop_data.target = null
 }
+const dragover = (e) => {
+  if (dragConf.value.dragFlag && !dragConf.value.banNodeList.includes(node.value)) {
+    e.preventDefault()
+  }
+}
+
+const clickNode = () => {
+  activateNode.value = node.value
+}
 </script>
 
 <template>
   <div
     :draggable="!['start', 'end'].includes(node.type)"
-    class="node-box"
     :class="{
-      'hover-node': curHoverNode === node,
-      'border-box': ['if', 'switch'].includes(node.type),
+      'node-box': !['start', 'end'].includes(node.type), // 开始结束不显示交互提示
+      'hover-node': curHoverNode === node || activateNode === node, // hover或者选中节点高亮
+      'no-branch-box': !['if', 'switch'].includes(node.type), // if和switch等有分支的节点包含节点和分支，否则只高亮节点
     }"
     @mouseenter="mouseenter"
     @mouseleave="mouseleave"
     @dragstart.stop="dragstart"
     @dragend="dragend"
+    @click.stop="clickNode"
   >
     <component :is="nodeComponent" v-model="node">
       <SubBtn @toSub="emits('subNode')"></SubBtn>
@@ -98,12 +110,10 @@ const dragleave = () => {
   </div>
   <template v-if="node.type !== 'end'">
     <div class="line"></div>
-    {{ dragConf.dragFlag && !dragConf.banNodeList.includes(node) }}
     <AddNodeBtn
       :class="{ canDropFalg: dragConf.dragFlag && !dragConf.banNodeList.includes(node) }"
-      :dropgable="dragConf.dragFlag && !dragConf.banNodeList.includes(node)"
       @toAdd="(node) => emits('addNode', node)"
-      @dragover.prevent=""
+      @dragover="dragover"
       @drop="drop"
       @dragenter="dragenter"
       @dragleave="dragleave"

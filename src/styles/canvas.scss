@@ -27,10 +27,24 @@ $node-wrapper-size: 100px; // 节点大小
   }
 }
 
+// hover的盒子样式
+%hover-box {
+  // border-color: rgb(253, 131, 131);
+  border-color: #fafafa;
+  background-color: rgba(255,255,255,.35);
+  box-shadow: 0 0 20px #b1b1b1;
+}
+%no-hover-box {
+  border-color: transparent;
+  box-shadow: none;
+  background-color: transparent;
+}
+
 .node-box {
   border: 1px solid transparent;
-  transition: border-color,transform .5s;
+  transition: all .5s;
   box-sizing: border-box;
+  border-radius: 5px;
   &:hover {
     transform: scale(1.02);
   }
@@ -41,10 +55,14 @@ $node-wrapper-size: 100px; // 节点大小
     opacity: 0;
   }
   &.hover-node {
-    &.border-box {
-      border-color: rgb(253, 131, 131);
-      border-radius: 5px;
+    @extend %hover-box;
+    &.no-branch-box {
+      @extend %no-hover-box;
+      & > .node-wrapper {
+        @extend %hover-box;
+      }
     }
+
     & > .node-wrapper > .sub-node {
       opacity: 1;
     }
@@ -58,6 +76,8 @@ $node-wrapper-size: 100px; // 节点大小
   align-items: center;
   width:$node-wrapper-size;
   margin:0 auto;
+  border-radius: 5px;
+  border: 1px solid transparent;
 }
 
 // 连线
