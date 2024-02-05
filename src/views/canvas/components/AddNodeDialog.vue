@@ -5,20 +5,26 @@ import { ClickOutside as vClickOutside } from 'element-plus'
 import nodeConfig from './nodeConfig'
 const position = ref({ x: 1, y: 1 })
 const visible = ref(false)
-
 let callBack
-const show = (pos, cb) => {
+let instance
+
+const close = () => {
+  visible.value = false
+  callBack = null
+  instance = null
+}
+
+const show = (pos, cb, it) => {
+  if (instance === it) return close()
+  instance = it
   callBack = cb
   position.value = pos
   visible.value = true
 }
-const close = () => {
-  visible.value = false
-}
 
 const handleSelect = (node) => {
   close()
-  callBack(node)
+  callBack?.(node)
 }
 
 const nodeList = ref(nodeConfig.filter(i => !['start', 'end'].includes(i.type)))

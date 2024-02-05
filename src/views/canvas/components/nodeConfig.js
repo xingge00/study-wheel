@@ -45,10 +45,16 @@ const formatBranch = (branchList, needCount = MIN_BRANCH_COUNT) => {
   if (temp.length >= needCount) return temp.slice(0, needCount)
   else return temp.slice().concat(new Array(needCount - temp.length).fill(0).map(_ => []))
 }
+
+class BranchList {
+  constructor(branchList = []) {
+  }
+}
+
 export class BaseNode {
   static id = 0
-  constructor(type, other = { branchList: [] }) {
-    const { branchList } = other
+  constructor(type, other) {
+    const { branchList = [], parentNode = null, branchIdx = null } = other || {}
     Object.defineProperty(this, 'id', {
       configurable: false,
       writable: false,
@@ -59,6 +65,10 @@ export class BaseNode {
       writable: false,
       value: nodeList.some(node => node.type === type) ? type : 'error',
     })
+    Object.defineProperty(this, 'parentNode', {
+      configurable: false,
+      value: parentNode,
+    })
     if (type === 'if') {
       let temp = formatBranch(branchList)
       Object.defineProperty(this, 'branchList', {
@@ -68,6 +78,10 @@ export class BaseNode {
           if (val.length !== MIN_BRANCH_COUNT) throw new Error(`分支数量必须为${MIN_BRANCH_COUNT}`)
           temp = val
         },
+      })
+      Object.defineProperty(this, 'branchIdx', {
+        configurable: false,
+        value: branchIdx,
       })
     }
     if (type === 'switch') {
@@ -80,7 +94,21 @@ export class BaseNode {
           temp = val
         },
       })
+      Object.defineProperty(this, 'branchIdx', {
+        configurable: false,
+        value: branchIdx,
+      })
     }
+  }
+
+  static copyBranchList(branchList) {
+    return branchList?.map((branch) => {
+      return branch?.map(node => node.copySelf()) || []
+    }) || []
+  }
+
+  copySelf() {
+    return new BaseNode(this.type, { branchList: BaseNode.copyBranchList(this.branchList) })
   }
 
   toString() {
@@ -90,7 +118,7 @@ export class BaseNode {
         result += `[${this[key].toString()}]`
       } else if (typeof this[key] === 'number') {
         result += `${this[key].toString()}`
-      } else {
+      } else if (typeof this[key] === 'string') {
         result += `"${this[key].toString()}"`
       }
       return result

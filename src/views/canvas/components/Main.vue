@@ -1,7 +1,8 @@
 
 <script setup>
-import { provide, ref, watch } from 'vue'
+import { provide, ref } from 'vue'
 import RenderList from './RenderList.vue'
+
 import AddNodeDialog from './AddNodeDialog.vue'
 import { BaseNode } from '@/views/canvas/components/nodeConfig.js'
 
@@ -36,13 +37,73 @@ provide('dragConf', dragConf)
 // 选中节点
 const activateNode = ref(null)
 provide('activateNode', activateNode)
+
+/**
+ * 截切版数据
+  {type: 'copy',data: null}
+ */
+const shearPlate = ref(null)
+const toCtrlC = (type) => {
+  // 没有选中节点,进行复制
+  const source = activateNode.value
+  if (!source) return
+  shearPlate.value = {
+    type,
+    data: source,
+  }
+}
+
+const toCtrlV = (e) => {
+  // 剪切板没有内容,直接返回
+  if (!shearPlate.value) return
+  const { type, data } = shearPlate.value
+  if (!data) return
+
+  if (Array.isArray(data)) {
+    // 复制分支
+    // shearPlate.value
+    return
+  }
+
+  const doMap = {
+    copy: () => {
+      nodeList.value.splice(1, 0, data.copySelf())
+    },
+    shear: () => {
+      nodeList.value.splice(1, 0, data)
+    },
+  }
+
+  doMap[type]()
+}
+const shortcutKeyFlag = ref(false)
+const shortcutKey = () => {
+  shortcutKeyFlag.value = !shortcutKeyFlag.value
+}
 </script>
 
 <template>
-  <div id="canvas-main" class="canvas-main" @click.capture="activateNode = null">
+  <div
+    id="canvas-main"
+    class="canvas-main"
+    @click.capture="activateNode = null"
+  >
+    <el-button @click="shortcutKey">
+      快捷建：{{ shortcutKeyFlag ? '开启' : '关闭' }}
+    </el-button>
     <RenderList v-model="nodeList" :start-line="false"></RenderList>
+    {{ shearPlate }}
     <!-- 1{{ hoverStack.map(i => i.toString()).length }} 2{{ dragConf.banDropNodeList }} 3{{ activateNode }} -->
-    <AddNodeDialog ref="addNodeDialogRef"></AddNodeDialog>
+    <AddNodeDialog
+      ref="addNodeDialogRef"
+    ></AddNodeDialog>
+    <div
+      v-if="shortcutKeyFlag"
+      v-mousetrap="['mod+c', 'mod+v', 'mod+x']"
+      @mod+c="() => toCtrlC('copy')"
+      @mod+x="() => toCtrlC('shear')"
+      @mod+v="toCtrlV"
+    ></div>
   </div>
 </template>
 

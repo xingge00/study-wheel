@@ -1,6 +1,6 @@
 
 <script setup>
-import { inject, useAttrs } from 'vue'
+import { getCurrentInstance, inject, useAttrs } from 'vue'
 const props = defineProps({
   endLine: {
     type: Boolean,
@@ -32,12 +32,15 @@ const addNodeCallBack = (node) => {
   emits('toAdd', node)
 }
 
+const instance = getCurrentInstance()
 const handleClick = (e) => {
   if (props.addType === 'branch') {
     return emits('toAdd')
   }
-  const { x: domX, y: domY } = getPositionByCanvas(e.target)
-  addNodeDialogRef.value.show({ x: e.offsetX + domX, y: e.offsetY + domY }, addNodeCallBack)
+  const { target, offsetY } = e
+
+  const { x: domX, y: domY } = getPositionByCanvas(target)
+  addNodeDialogRef.value.show({ x: target.clientWidth + domX, y: offsetY + domY }, addNodeCallBack, instance)
 }
 </script>
 

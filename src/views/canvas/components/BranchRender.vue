@@ -58,6 +58,10 @@ const drop = (idx) => {
   }
   dragIdx.value = null
 }
+
+const clickNode = (idx) => {
+  activateNode.value = bindBranch.value[idx]
+}
 </script>
 
 <template>
@@ -95,6 +99,7 @@ const drop = (idx) => {
       @dragover="(e) => dragover(e)"
       @drop.capture="() => drop(idx)"
       @dragend="dragend"
+      @click.stop="() => clickNode(idx)"
     ></RenderList>
   </div>
 </template>

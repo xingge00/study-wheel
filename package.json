@@ -13,6 +13,7 @@
     "@vitejs/plugin-vue-jsx": "^3.0.2",
     "element-plus": "^2.2.30",
     "highlight.js": "^11.7.0",
+    "mousetrap": "^1.6.5",
     "nanoid": "^4.0.1",
     "pinia": "^2.0.32",
     "sortablejs": "^1.15.0",

@@ -10,6 +10,7 @@ $node-wrapper-size: 100px; // 节点大小
   border-color: #fafafa;
   background-color: rgba(255,255,255,.35);
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  border-radius: 10px;
 }
 %no-hover-box {
   border-color: transparent;
@@ -25,13 +26,6 @@ $node-wrapper-size: 100px; // 节点大小
   flex-direction: column;
   justify-content: center;
   position: relative;
-
-  &.hover-branch {
-    @extend %hover-box;
-  }
-  .can-drop-branch {
-    border: 1px dashed green;
-  }
 
   & > .sub-node {
     left: 50%;
@@ -97,6 +91,25 @@ $node-wrapper-size: 100px; // 节点大小
   flex-grow: 1;
 }
 
+
+@keyframes canDropBranch
+{
+    0% {
+      transform: scale(1);
+    }
+    25% {
+      transform: scale(1.01);
+    }
+    50% {
+      transform: scale(1);
+    }
+    75% {
+      transform: scale(0.99);
+    }
+    100% {
+      transform: scale(1);
+    }
+}
 // 分支容器
 .branch-wrapper {
   display: inline-flex;
@@ -105,6 +118,15 @@ $node-wrapper-size: 100px; // 节点大小
 
   &.branch-wrapper-width {
     width:calc(#{$node-wrapper-size} * var(--var-col-count))
+  }
+
+  & > .hover-branch {
+    @extend %hover-box;
+  }
+  & > .can-drop-branch {
+    border: 1px dashed #3b3b3b;
+    box-shadow: 0 0 10px #3b3b3b;
+    animation: canDropBranch 2.5s infinite;
   }
 
   &::before,&::after {
