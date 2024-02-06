@@ -6,36 +6,7 @@ import If from './nodeComp/If.vue'
 import Switch from './nodeComp/Switch.vue'
 import Feat from './nodeComp/Feat.vue'
 
-const nodeList = [
-  {
-    type: 'start',
-    component: markRaw(Start),
-    generateNode: () => new BaseNode('start'),
-  },
-  {
-    type: 'end',
-    component: markRaw(End),
-    generateNode: () => new BaseNode('end'),
-  },
-  {
-    type: 'if',
-    component: markRaw(If),
-    generateNode: () => new BaseNode('if'),
-  },
-  {
-    type: 'switch',
-    component: markRaw(Switch),
-    generateNode: (branchList = [[], []]) => new BaseNode('switch', { branchList }),
-  },
-  {
-    type: 'feat',
-    component: markRaw(Feat),
-    generateNode: () => new BaseNode('feat'),
-  },
-
-]
-
-const MIN_BRANCH_COUNT = 2 // 节点的最少分支数量
+const MIN_BRANCH_COUNT = 2 // 有分支节点的最少分支数量
 /** 标准化分支数据 */
 const formatBranch = (branchList, needCount = MIN_BRANCH_COUNT) => {
   const temp = branchList?.filter(Array.isArray)
@@ -46,15 +17,39 @@ const formatBranch = (branchList, needCount = MIN_BRANCH_COUNT) => {
   else return temp.slice().concat(new Array(needCount - temp.length).fill(0).map(_ => []))
 }
 
-class BranchList {
-  constructor(branchList = []) {
-  }
-}
+const nodeList = [
+  {
+    type: 'start',
+    component: markRaw(Start),
+    generateNode: () => generateNode({ type: 'start' }),
+  },
+  {
+    type: 'end',
+    component: markRaw(End),
+    generateNode: () => generateNode({ type: 'end' }),
+  },
+  {
+    type: 'if',
+    component: markRaw(If),
+    generateNode: (parentNode = null, branchIdx = null) => generateNode({ type: 'if' }, parentNode, branchIdx),
+  },
+  {
+    type: 'switch',
+    component: markRaw(Switch),
+    generateNode: (parentNode = null, branchIdx = null) => generateNode({ type: 'switch' }, parentNode, branchIdx),
+  },
+  {
+    type: 'feat',
+    component: markRaw(Feat),
+    generateNode: (parentNode = null, branchIdx = null) => generateNode({ type: 'feat' }, parentNode, branchIdx),
+  },
+
+]
 
 export class BaseNode {
   static id = 0
   constructor(type, other) {
-    const { branchList = [], parentNode = null, branchIdx = null } = other || {}
+    const { parentNode = null, branchIdx = null } = other || {}
     Object.defineProperty(this, 'id', {
       configurable: false,
       writable: false,
@@ -67,12 +62,20 @@ export class BaseNode {
     })
     Object.defineProperty(this, 'parentNode', {
       configurable: false,
+      writable: true,
       value: parentNode,
     })
+    this.initBranchList(this, [[], []], null)
+  }
+
+  initBranchList(parentNode, branchList, branchIdx) {
+    const { type } = this
     if (type === 'if') {
-      let temp = formatBranch(branchList)
+      let temp = formatBranch(branchList, MIN_BRANCH_COUNT)
+      // 分支数组注入父节点信息
+      temp.parentNode = parentNode
       Object.defineProperty(this, 'branchList', {
-        configurable: false,
+        configurable: true,
         get: () => temp,
         set(val) {
           if (val.length !== MIN_BRANCH_COUNT) throw new Error(`分支数量必须为${MIN_BRANCH_COUNT}`)
@@ -80,14 +83,16 @@ export class BaseNode {
         },
       })
       Object.defineProperty(this, 'branchIdx', {
-        configurable: false,
+        configurable: true,
         value: branchIdx,
       })
     }
     if (type === 'switch') {
       let temp = formatBranch(branchList, 0)
+      // 分支数组注入父节点信息
+      temp.parentNode = this
       Object.defineProperty(this, 'branchList', {
-        configurable: false,
+        configurable: true,
         get: () => temp,
         set(val) {
           if (val.length < MIN_BRANCH_COUNT) throw new Error(`分支数量至少为${MIN_BRANCH_COUNT}`)
@@ -95,7 +100,7 @@ export class BaseNode {
         },
       })
       Object.defineProperty(this, 'branchIdx', {
-        configurable: false,
+        configurable: true,
         value: branchIdx,
       })
     }
@@ -130,5 +135,17 @@ export const ErrorItem = {
   type: 'error',
   component: markRaw(Error),
   generateNode: () => new BaseNode('error'),
+}
+
+function generateNode(node, parentNode = null, branchIdx = null) {
+  const newNode = new BaseNode(node.type, { parentNode, branchIdx })
+  newNode.initBranchList(newNode, (node.branchList || [[], []]).map((branch, idx) => generateNodeList(branch, newNode, idx)))
+  return newNode
+}
+
+export function generateNodeList(nodeList, parentNode = null, branchIdx = null) {
+  return nodeList.map((node) => {
+    return generateNode(node, parentNode, branchIdx)
+  })
 }
 export default nodeList

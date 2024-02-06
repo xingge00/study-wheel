@@ -137,7 +137,7 @@ $node-wrapper-size: 100px; // 节点大小
 
     // 默认居中显示 实际相对应节点计算得出
     width: calc(100% - #{$node-wrapper-size} / 2 * (var(--var-first-branch-col-count) + var(--var-last-branch-col-count)));
-    left: calc(#{$node-wrapper-size} / 2 * var(--var-first-branch-col-count));
+    left: calc(#{$node-wrapper-size} / 2 * var(--var-first-branch-col-count) + 1px);
     transform: none;
   }
   &::before {top: 0;}

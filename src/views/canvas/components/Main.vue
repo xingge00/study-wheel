@@ -4,20 +4,34 @@ import { provide, ref } from 'vue'
 import RenderList from './RenderList.vue'
 
 import AddNodeDialog from './AddNodeDialog.vue'
-import { BaseNode } from '@/views/canvas/components/nodeConfig.js'
+import { BaseNode, generateNodeList } from '@/views/canvas/components/nodeConfig.js'
 
-const nodeList = ref([
-  new BaseNode('start'),
-  new BaseNode('feat'),
-  new BaseNode('switch', {
+const temp = generateNodeList([
+  { type: 'start' },
+  { type: 'feat' },
+  {
+    type: 'switch',
     branchList: [
-      [new BaseNode('feat')],
-      [new BaseNode('feat')],
-      [new BaseNode('feat')],
+      [{ type: 'feat' }],
+      [{ type: 'feat' }],
+      [{ type: 'feat' }],
     ],
-  }),
-  new BaseNode('end'),
+  },
+  { type: 'end' },
 ])
+// const temp = initNodeList([
+//   new BaseNode('start'),
+//   new BaseNode('feat'),
+//   new BaseNode('switch', {
+//     branchList: [
+//       [new BaseNode('feat')],
+//       [new BaseNode('feat')],
+//       [new BaseNode('feat')],
+//     ],
+//   }),
+//   new BaseNode('end'),
+// ])
+const nodeList = ref(temp)
 
 console.log(nodeList.value)
 
@@ -93,6 +107,7 @@ const shortcutKey = () => {
     </el-button>
     <RenderList v-model="nodeList" :start-line="false"></RenderList>
     {{ shearPlate }}
+    <!-- {{ activateNode?.branchList.parentNode === activateNode }} -->
     <!-- 1{{ hoverStack.map(i => i.toString()).length }} 2{{ dragConf.banDropNodeList }} 3{{ activateNode }} -->
     <AddNodeDialog
       ref="addNodeDialogRef"
