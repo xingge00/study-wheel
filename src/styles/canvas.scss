@@ -3,7 +3,7 @@ $line-color: #ccc; // 连线颜色
 $line-size: 2px; // 连线粗细
 $line-length: 12px; // 连线长度
 
-$node-wrapper-size: 100px; // 节点大小
+$node-wrapper-size: 85px; // 节点大小
 
 // hover的盒子样式
 %hover-box {
@@ -22,7 +22,7 @@ $node-wrapper-size: 100px; // 节点大小
   margin: 0 auto;
   display: inline-flex;
   text-align: center;
-  min-width: 100px;
+  min-width: $node-wrapper-size;
   flex-direction: column;
   justify-content: center;
   position: relative;

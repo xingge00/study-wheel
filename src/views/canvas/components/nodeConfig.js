@@ -35,7 +35,7 @@ const nodeList = [
 
 ]
 
-const MIN_BRANCH_COUNT = 2 // 节点的最少分支数量
+export const MIN_BRANCH_COUNT = 2 // 节点的最少分支数量
 /** 标准化分支数据 */
 const formatBranch = (branchList, needCount = MIN_BRANCH_COUNT) => {
   const temp = branchList?.filter(Array.isArray)
@@ -44,11 +44,6 @@ const formatBranch = (branchList, needCount = MIN_BRANCH_COUNT) => {
   if (!needCount) return temp.slice()
   if (temp.length >= needCount) return temp.slice(0, needCount)
   else return temp.slice().concat(new Array(needCount - temp.length).fill(0).map(_ => []))
-}
-
-class BranchList {
-  constructor(branchList = []) {
-  }
 }
 
 export class BaseNode {
@@ -76,6 +71,7 @@ export class BaseNode {
         get: () => temp,
         set(val) {
           if (val.length !== MIN_BRANCH_COUNT) throw new Error(`分支数量必须为${MIN_BRANCH_COUNT}`)
+          console.log('val.length', val.length)
           temp = val
         },
       })
@@ -130,5 +126,33 @@ export const ErrorItem = {
   type: 'error',
   component: markRaw(Error),
   generateNode: () => new BaseNode('error'),
+}
+
+export const getParentNode = (nodeList, target, parentNode = null) => {
+  for (let idx1 in nodeList) {
+    idx1 = idx1 - 0
+    const node = nodeList[idx1]
+    // target为节点
+    if (node === target) return {
+      nodeList,
+      parentNode,
+      nodeIdx: idx1,
+      branchIdx: null,
+    }
+    for (let idx2 in (node.branchList || [])) {
+      idx2 = idx2 - 0
+      const brach = node.branchList[idx2]
+      // target为分支
+      if (brach === target) return {
+        nodeList: brach,
+        parentNode: node,
+        branchIdx: idx2,
+        nodeIdx: null,
+      }
+      const res = getParentNode(brach, target, node)
+      if (res) return res
+    }
+  }
+  return null
 }
 export default nodeList
