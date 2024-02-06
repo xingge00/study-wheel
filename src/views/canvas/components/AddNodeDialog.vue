@@ -23,8 +23,8 @@ const show = (pos, cb, it) => {
 }
 
 const handleSelect = (node) => {
-  close()
   callBack?.(node)
+  close()
 }
 
 const nodeList = ref(nodeConfig.filter(i => !['start', 'end'].includes(i.type)))
