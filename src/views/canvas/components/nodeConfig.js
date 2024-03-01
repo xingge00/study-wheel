@@ -46,10 +46,18 @@ const formatBranch = (branchList, needCount = MIN_BRANCH_COUNT) => {
   else return temp.slice().concat(new Array(needCount - temp.length).fill(0).map(_ => []))
 }
 
+const genContext = () => {
+  return {
+    code: '',
+  }
+}
 export class BaseNode {
   static id = 0
   constructor(type, other) {
-    const { branchList = [], parentNode = null, branchIdx = null } = other || {}
+    const {
+      branchList = [],
+      nodeInfo = {},
+    } = other || {}
     Object.defineProperty(this, 'id', {
       configurable: false,
       writable: false,
@@ -60,10 +68,23 @@ export class BaseNode {
       writable: false,
       value: nodeList.some(node => node.type === type) ? type : 'error',
     })
-    Object.defineProperty(this, 'parentNode', {
+
+    Object.defineProperty(this, 'nodeInfo', {
       configurable: false,
-      value: parentNode,
+      get() {
+        return new Proxy(nodeInfo, {
+          get(target, key, receiver) {
+            return Reflect.get(target, key, receiver)
+          },
+          set(target, key, newValue, receiver) {
+            console.log('修改了', target, '的', key, '为', newValue)
+            Reflect.set(target, key, newValue, receiver)
+          },
+        })
+      },
+
     })
+
     if (type === 'if') {
       let temp = formatBranch(branchList)
       Object.defineProperty(this, 'branchList', {
@@ -75,10 +96,6 @@ export class BaseNode {
           temp = val
         },
       })
-      Object.defineProperty(this, 'branchIdx', {
-        configurable: false,
-        value: branchIdx,
-      })
     }
     if (type === 'switch') {
       let temp = formatBranch(branchList, 0)
@@ -89,10 +106,6 @@ export class BaseNode {
           if (val.length < MIN_BRANCH_COUNT) throw new Error(`分支数量至少为${MIN_BRANCH_COUNT}`)
           temp = val
         },
-      })
-      Object.defineProperty(this, 'branchIdx', {
-        configurable: false,
-        value: branchIdx,
       })
     }
   }
@@ -107,6 +120,50 @@ export class BaseNode {
     return new BaseNode(this.type, { branchList: BaseNode.copyBranchList(this.branchList) })
   }
 
+  static executeNode(node, params = [], context) {
+    if (!context) context = genContext()
+    const { type, branchList } = node
+
+    let subRes
+    if (['if', 'switch'].includes(type)) {
+      // 暂时执行第一条分支
+      subRes = BaseNode.executeList(branchList[0], params)
+    }
+    const doMap = {
+      start: () => `start
+      `,
+      feat: () => `feat
+      `,
+      end: () => `end
+      `,
+      if: () => `if(){
+        ${subRes.context.code}
+        }
+      `,
+      switch: () => `switch(){
+        ${subRes.context.code}
+      }
+      `,
+    }
+
+    context.code += doMap[type]()
+    return {
+      result: params,
+      context,
+    }
+  }
+
+  static executeList(nodeList, params = []) {
+    const context = genContext()
+    const result = nodeList.reduce((preParams, curNode) => {
+      return BaseNode.executeNode(curNode, preParams, context).result
+    }, params)
+    return {
+      result,
+      context,
+    }
+  }
+
   toString() {
     return `{${Object.getOwnPropertyNames(this).reduce((acc, key) => {
       let result = `${acc},${key}:`
@@ -116,6 +173,8 @@ export class BaseNode {
         result += `${this[key].toString()}`
       } else if (typeof this[key] === 'string') {
         result += `"${this[key].toString()}"`
+      } else {
+        result += `{${this[key].toString()}}`
       }
       return result
     }, '').slice(1)}}`

@@ -4,6 +4,7 @@ import { provide, ref, toRaw } from 'vue'
 import RenderList from './RenderList.vue'
 
 import AddNodeDialog from './AddNodeDialog.vue'
+import InfoPanel from './InfoPanel.vue'
 import { BaseNode, MIN_BRANCH_COUNT, getParentNode } from '@/views/canvas/components/nodeConfig.js'
 
 const nodeList = ref([
@@ -48,6 +49,7 @@ const toCtrlX = () => {
   // 没有选中节点,进行剪切
   const source = activateNode.value
   if (!source) return
+  if (['start', 'end'].includes(source.type)) return
 
   const { parentNode, branchIdx, nodeList: branchNodeList, nodeIdx } = getParentNode(nodeList.value, activateNode.value, null)
   if (Array.isArray(source)) {
@@ -70,6 +72,7 @@ const toCtrlC = () => {
   // 没有选中节点,不进行复制
   const source = activateNode.value
   if (!source) return
+  if (['start', 'end'].includes(source.type)) return
   shearPlate.value = {
     type: 'copy',
     data: source,
@@ -81,6 +84,8 @@ const toCtrlV = (e) => {
   if (!shearPlate.value) return
   const { type, data } = shearPlate.value
   if (!data) return
+
+  if (['end'].includes(activateNode.value.type)) return
 
   // 节点处理
   const doMap = {
@@ -120,6 +125,13 @@ const shortcutKeyFlag = ref(true)
 const shortcutKey = () => {
   shortcutKeyFlag.value = !shortcutKeyFlag.value
 }
+
+const code = ref('')
+const execute = () => {
+  console.log('BaseNode.executeList(nodeList.value, [])', BaseNode.executeList(nodeList.value, []))
+  const res = BaseNode.executeList(nodeList.value, [])
+  code.value = res.context.code
+}
 </script>
 
 <template>
@@ -131,14 +143,25 @@ const shortcutKey = () => {
     <el-button @click="shortcutKey">
       快捷建：{{ shortcutKeyFlag ? '开启' : '关闭' }}
     </el-button>
+    <el-button @click="execute">
+      执行
+    </el-button>
     <RenderList v-model="nodeList" :start-line="false"></RenderList>
-    {{ shearPlate }}
-
-    {{ getParentNode(nodeList, activateNode, null) }}
-    <!-- 1{{ hoverStack.map(i => i.toString()).length }} 2{{ dragConf.banDropNodeList }} 3{{ activateNode }} -->
+    <div style="display: inline-block;vertical-align: top;">
+      shearPlate: {{ shearPlate }} <br />
+      ParentNode: {{ getParentNode(nodeList, activateNode, null)?.parentNode || 'null' }} <br />
+      activateNode: {{ activateNode }} <br />
+      <pre>
+      code<br />
+      {{ code }}
+    </pre>
+    </div>
+    <!-- 添加节点弹窗 -->
     <AddNodeDialog
       ref="addNodeDialogRef"
     ></AddNodeDialog>
+    <!-- 节点信息面板 -->
+    <InfoPanel></InfoPanel>
     <div
       v-if="shortcutKeyFlag"
       v-mousetrap="['mod+c', 'mod+v', 'mod+x']"

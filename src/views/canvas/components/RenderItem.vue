@@ -93,8 +93,8 @@ const clickNode = () => {
 <template>
   <div
     :draggable="!['start', 'end'].includes(node.type)"
+    class="node-box"
     :class="{
-      'node-box': !['start', 'end'].includes(node.type), // 开始结束不显示交互提示
       'hover-node': curHoverNode === node || activateNode === node, // hover或者选中节点高亮
       'no-branch-box': !['if', 'switch'].includes(node.type), // if和switch等有分支的节点包含节点和分支，否则只高亮节点
     }"
