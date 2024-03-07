@@ -69,33 +69,29 @@ export class BaseNode {
       value: nodeList.some(node => node.type === type) ? type : 'error',
     })
 
-    Object.defineProperty(this, 'nodeInfo', {
-      configurable: false,
-      get() {
-        return new Proxy(nodeInfo, {
-          get(target, key, receiver) {
-            return Reflect.get(target, key, receiver)
-          },
-          set(target, key, newValue, receiver) {
-            console.log('修改了', target, '的', key, '为', newValue)
-            Reflect.set(target, key, newValue, receiver)
-          },
-        })
-      },
-
-    })
-
     if (type === 'if') {
-      let temp = formatBranch(branchList)
+      const temp = formatBranch(branchList)
       Object.defineProperty(this, 'branchList', {
         configurable: false,
-        get: () => temp,
-        set(val) {
-          if (val.length !== MIN_BRANCH_COUNT) throw new Error(`分支数量必须为${MIN_BRANCH_COUNT}`)
-          console.log('val.length', val.length)
-          temp = val
+        get() {
+          return new Proxy(temp, {
+            get(target, key, receiver) {
+              // todo 拿到splice方法做拦截限制分支数量 / 或者禁用splice
+              return Reflect.get(target, key, receiver)
+            },
+            set(target, key, newValue, receiver) {
+              if (['0', '1'].includes(key)) {
+                return Reflect.set(target, key, newValue, receiver)
+              } else {
+                console.error(`分支数量必须为${MIN_BRANCH_COUNT}`)
+                return false
+              }
+            },
+          })
         },
       })
+
+      if (this.type === 'if') window.a = this.branchList
     }
     if (type === 'switch') {
       let temp = formatBranch(branchList, 0)
@@ -108,6 +104,25 @@ export class BaseNode {
         },
       })
     }
+
+    nodeInfo.nodeName = this.type
+    // nodeInfo.a = {
+    //   b: 'a.b',
+    // }
+    Object.defineProperty(this, 'nodeInfo', {
+      configurable: false,
+      get() {
+        return new Proxy(nodeInfo, {
+          get(target, key, receiver) {
+            return Reflect.get(target, key, receiver)
+          },
+          set(target, key, newValue, receiver) {
+            console.log('修改了', target, '的', key, '为', newValue)
+            return Reflect.set(target, key, newValue, receiver)
+          },
+        })
+      },
+    })
   }
 
   static copyBranchList(branchList) {
@@ -187,7 +202,7 @@ export const ErrorItem = {
   generateNode: () => new BaseNode('error'),
 }
 
-export const getParentNode = (nodeList, target, parentNode = null) => {
+const convert = (nodeList, target, parentNode = null) => {
   for (let idx1 in nodeList) {
     idx1 = idx1 - 0
     const node = nodeList[idx1]
@@ -208,10 +223,16 @@ export const getParentNode = (nodeList, target, parentNode = null) => {
         branchIdx: idx2,
         nodeIdx: null,
       }
-      const res = getParentNode(brach, target, node)
+      const res = convert(brach, target, node)
       if (res) return res
     }
   }
   return null
+}
+
+export const getParentNode = (target) => {
+  const nodeList = window?.__nodeList?.value || []
+  const activateNode = window?.__activateNode?.value || null
+  return convert(nodeList || [], target || activateNode)
 }
 export default nodeList

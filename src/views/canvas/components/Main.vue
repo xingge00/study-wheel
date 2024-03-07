@@ -1,15 +1,20 @@
 
 <script setup>
-import { provide, ref, toRaw } from 'vue'
+import { onBeforeUnmount, provide, ref } from 'vue'
 import RenderList from './RenderList.vue'
 
 import AddNodeDialog from './AddNodeDialog.vue'
-import InfoPanel from './InfoPanel.vue'
+import InfoPanel from './InfoPanel'
 import { BaseNode, MIN_BRANCH_COUNT, getParentNode } from '@/views/canvas/components/nodeConfig.js'
 
 const nodeList = ref([
   new BaseNode('start'),
   new BaseNode('feat'),
+  new BaseNode('if', {
+    branchList: [
+      [new BaseNode('feat')],
+    ],
+  }),
   new BaseNode('switch', {
     branchList: [
       [new BaseNode('feat')],
@@ -19,8 +24,7 @@ const nodeList = ref([
   }),
   new BaseNode('end'),
 ])
-
-console.log(nodeList.value)
+window.__nodeList = nodeList
 
 // 添加节点弹窗
 const addNodeDialogRef = ref(null)
@@ -38,6 +42,12 @@ provide('dragConf', dragConf)
 // 选中节点
 const activateNode = ref(null)
 provide('activateNode', activateNode)
+window.__activateNode = activateNode
+
+onBeforeUnmount(() => {
+  window.__activateNode = undefined
+  window.__nodeList = undefined
+})
 
 /**
  * 截切版数据
@@ -51,7 +61,7 @@ const toCtrlX = () => {
   if (!source) return
   if (['start', 'end'].includes(source.type)) return
 
-  const { parentNode, branchIdx, nodeList: branchNodeList, nodeIdx } = getParentNode(nodeList.value, activateNode.value, null)
+  const { parentNode, branchIdx, nodeList: branchNodeList, nodeIdx } = getParentNode()
   if (Array.isArray(source)) {
     // 剪切分支
     if (parentNode.branchList?.length <= MIN_BRANCH_COUNT) {
@@ -91,13 +101,13 @@ const toCtrlV = (e) => {
   const doMap = {
     copyNode: () => {
       if (!activateNode.value || Array.isArray(activateNode.value)) return
-      const { nodeList: branchNodeList, nodeIdx } = getParentNode(nodeList.value, activateNode.value, null)
+      const { nodeList: branchNodeList, nodeIdx } = getParentNode()
       console.log({ branchNodeList, nodeIdx })
       branchNodeList.splice(nodeIdx + 1, 0, data.copySelf())
     },
     shearNode: () => {
       if (!activateNode.value || Array.isArray(activateNode.value)) return
-      const { nodeList: branchNodeList, nodeIdx } = getParentNode(nodeList.value, activateNode.value, null)
+      const { nodeList: branchNodeList, nodeIdx } = getParentNode()
       branchNodeList.splice(nodeIdx + 1, 0, data)
       // 粘贴完剪切的数据 ,清空剪切板
       shearPlate.value = null
@@ -149,27 +159,27 @@ const execute = () => {
     <RenderList v-model="nodeList" :start-line="false"></RenderList>
     <div style="display: inline-block;vertical-align: top;">
       shearPlate: {{ shearPlate }} <br />
-      ParentNode: {{ getParentNode(nodeList, activateNode, null)?.parentNode || 'null' }} <br />
+      ParentNode: {{ getParentNode()?.parentNode || 'null' }} <br />
       activateNode: {{ activateNode }} <br />
       <pre>
       code<br />
       {{ code }}
     </pre>
     </div>
-    <!-- 添加节点弹窗 -->
-    <AddNodeDialog
-      ref="addNodeDialogRef"
-    ></AddNodeDialog>
-    <!-- 节点信息面板 -->
-    <InfoPanel></InfoPanel>
-    <div
-      v-if="shortcutKeyFlag"
-      v-mousetrap="['mod+c', 'mod+v', 'mod+x']"
-      @mod+c="() => toCtrlC()"
-      @mod+x="() => toCtrlX()"
-      @mod+v="toCtrlV"
-    ></div>
   </div>
+  <!-- 添加节点弹窗 -->
+  <AddNodeDialog
+    ref="addNodeDialogRef"
+  ></AddNodeDialog>
+  <!-- 节点信息面板 -->
+  <InfoPanel></InfoPanel>
+  <div
+    v-if="shortcutKeyFlag"
+    v-mousetrap="['mod+c', 'mod+v', 'mod+x']"
+    @mod+c="() => toCtrlC()"
+    @mod+x="() => toCtrlX()"
+    @mod+v="toCtrlV"
+  ></div>
 </template>
 
 <style lang="scss" scoped>

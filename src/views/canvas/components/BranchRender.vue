@@ -48,14 +48,23 @@ const dragover = (e) => {
 }
 const drop = (idx) => {
   if (dragIdx.value === idx || dragIdx.value === null) return
-  if (dragIdx.value < idx) {
-    const source = bindBranch.value[dragIdx.value]
-    bindBranch.value.splice(idx + 1, 0, source)
-    bindBranch.value.splice(dragIdx.value, 1)
-  } else {
-    const source = bindBranch.value.splice(dragIdx.value, 1)[0]
-    bindBranch.value.splice(idx, 0, source)
+
+  let left = Math.min(dragIdx.value, idx)
+  let right = Math.max(dragIdx.value, idx)
+  const temp = bindBranch.value[dragIdx.value]
+
+  while (left < right) {
+    if (dragIdx.value < idx)
+      bindBranch.value[left] = bindBranch.value[++left]
+    else
+      bindBranch.value[right] = bindBranch.value[--right]
+
+    if (left === right) bindBranch.value[left] = temp
   }
+
+  // const [source] = bindBranch.value.splice(dragIdx.value, 1)
+  // bindBranch.value.splice(idx, 0, source)
+
   dragIdx.value = null
 }
 
@@ -67,7 +76,7 @@ const clickNode = (idx) => {
 <template>
   <div class="line"></div>
   <AddNodeBtn
-    v-if="curNode.type === 'switch'"
+    v-if="['switch'].includes(curNode.type)"
     class="on-bottom"
     :end-line="false"
     add-type="branch"
