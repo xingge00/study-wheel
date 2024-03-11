@@ -4,16 +4,39 @@ import { computed, inject, ref } from 'vue'
 import Condition from './components/Condition.vue'
 import { getParentNode } from '@/views/canvas/components/nodeConfig.js'
 
+/**
+ *
+if.nodeInfo{
+  nodeName:'if',//节点名称
+  condition:'a>b',//条件表达式
+  firstBrachTrue:true,
+}
+ */
 const activateNode = inject('activateNode')
+
+// 当前选中的是否分支(否则是节点)
+const isActiveBranch = computed(() => Array.isArray(activateNode.value))
+
+const curActivateNode = computed(() => {
+  if (isActiveBranch.value) {
+    const { parentNode, branchIdx } = getParentNode(activateNode.value[0])
+    console.log('parentNode', parentNode)
+    return parentNode
+  } else {
+    return activateNode.value
+  }
+})
 const nodeInfo = computed({
-  get: () => activateNode.value?.nodeInfo || {},
+  get: () => curActivateNode.value?.nodeInfo || {},
   set: (val) => {
-    activateNode.value.nodeInfo = val
+    curActivateNode.value.nodeInfo = val
   },
 })
 
 const formatNodeInfo = (node) => {
-  const genFieldItem = (label, field, type, component) => ({ label, field, type, component })
+  const genFieldItem = (label, field, type, conf = {
+    options: [{ label: '是', value: true }, { label: '否', value: false }],
+  }) => ({ label, field, type, conf })
 
   const { type } = node
   switch (type) {
@@ -25,11 +48,19 @@ const formatNodeInfo = (node) => {
             attrs: [
               genFieldItem('节点名称', 'nodeName', 'input'),
               genFieldItem('判断条件', 'condition', 'input'),
-              genFieldItem('a', 'a', 'input'),
-              genFieldItem('b', 'b', 'input'),
-              genFieldItem('b.b', 'b.b.c', 'input'),
-              genFieldItem('a.b', 'a.b', 'input'),
+              genFieldItem('true分支索引', 'trueBranchIdx', 'radio', {
+                options: [{ label: 1, value: 1 }, { label: 2, value: 2 }],
+              }),
+
             ],
+          },
+          {
+            moduleName: '分支信息',
+            attrs: [
+              genFieldItem('分支名称', '', 'input', {
+                disabled: true,
+              }),
+            ].filter(i => isActiveBranch.value), // 选中分支时才显示
           },
           {
             moduleName: '输入参数',
@@ -43,10 +74,10 @@ const formatNodeInfo = (node) => {
               // { label: '节点名称', type: 'input', disabled: true, value: 'if' },
             ],
           },
-        ],
+        ].filter(i => i?.attrs?.length), // 没有属性时不显示
         other: [
           { moduleName: '', attrs: [{ label: '', type: 'input' }] },
-        ],
+        ].filter(i => i?.attrs?.length), // 没有属性时不显示
       }
 
     default:
@@ -55,7 +86,7 @@ const formatNodeInfo = (node) => {
 }
 
 const renderAttrs = computed(() => {
-  const { base, other } = formatNodeInfo(activateNode.value)
+  const { base, other } = formatNodeInfo(curActivateNode.value)
   console.log(base, other)
   return [
     {
@@ -120,12 +151,27 @@ const onChange = (val, fieldStr) => {
             </div>
             <div v-for="(attr, idx3) in module.attrs" :key="idx3">
               <el-form-item :label="attr.label" :rules="attr.required && [{ required: true, message: '' }]">
-                <!-- <el-input v-model="nodeInfo[attr.field]" :disabled="attr.disabled"></el-input> -->
                 <el-input
-                  :disabled="attr.disabled"
+                  v-if="attr.type === 'input'"
+                  :disabled="attr.conf.disabled"
                   :model-value="bindTargetField(attr.field)"
                   @input="(val) => onChange(val, attr.field)"
                 ></el-input>
+
+                <el-radio-group
+                  v-if="attr.type === 'radio'"
+                  :disabled="attr.conf.disabled"
+                  :model-value="bindTargetField(attr.field)"
+                  @change="(val) => onChange(val, attr.field)"
+                >
+                  <el-radio-button
+                    v-for="radio in attr.conf.options"
+                    :key="radio.value"
+                    :label="radio.label"
+                    :value="radio.value"
+                  >
+                  </el-radio-button>
+                </el-radio-group>
               </el-form-item>
             </div>
           </div>

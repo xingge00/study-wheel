@@ -51,6 +51,20 @@ const genContext = () => {
     code: '',
   }
 }
+
+const genNodeInfo = (type) => {
+  const infoMap = {
+    if: {
+      nodeName: 'if', // 节点名称
+      condition: 'a>b', // 条件表达式
+      trueBranchIdx: 1, // true分支
+    },
+  }
+  const result = infoMap[type] || {}
+  result.nodeName = type
+  return result
+}
+
 export class BaseNode {
   static id = 0
   constructor(type, other) {
@@ -90,8 +104,6 @@ export class BaseNode {
           })
         },
       })
-
-      if (this.type === 'if') window.a = this.branchList
     }
     if (type === 'switch') {
       let temp = formatBranch(branchList, 0)
@@ -105,14 +117,14 @@ export class BaseNode {
       })
     }
 
-    nodeInfo.nodeName = this.type
-    // nodeInfo.a = {
-    //   b: 'a.b',
-    // }
+    const defaultNodeInfo = genNodeInfo(this.type)
+    // 节点原来的值覆盖默认值
+    Object.assign(defaultNodeInfo, nodeInfo)
+
     Object.defineProperty(this, 'nodeInfo', {
       configurable: false,
       get() {
-        return new Proxy(nodeInfo, {
+        return new Proxy(defaultNodeInfo, {
           get(target, key, receiver) {
             return Reflect.get(target, key, receiver)
           },

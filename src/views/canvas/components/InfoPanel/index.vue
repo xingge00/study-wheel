@@ -34,8 +34,9 @@ const close = () => {
     class="custom-drawer"
   >
     <template v-if="curNode">
-      <BranchInfo v-if="Array.isArray(curNode)" />
-      <NodeInfo v-else />
+      <!-- <BranchInfo v-if="Array.isArray(curNode)" />
+      <NodeInfo v-else /> -->
+      <NodeInfo></NodeInfo>
     </template>
   </div>
 </template>
