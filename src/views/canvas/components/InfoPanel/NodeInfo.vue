@@ -9,7 +9,7 @@ import { getParentNode } from '@/views/canvas/components/nodeConfig.js'
 if.nodeInfo{
   nodeName:'if',//节点名称
   condition:'a>b',//条件表达式
-  firstBrachTrue:true,
+  trueBranchIdx:1|2,
 }
 switch.nodeInfo{
   nodeName:'if',//节点名称

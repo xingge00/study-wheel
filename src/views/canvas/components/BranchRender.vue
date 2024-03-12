@@ -22,7 +22,17 @@ const bindBranch = computed({
   set: val => emits('update:modelValue', val),
 })
 
-const branchNameList = computed(() => (props.curNode?.nodeInfo?.branchInfoList || []).map(i => i.branchName))
+const branchNameList = computed(() => {
+  console.log(props.curNode?.nodeInfo)
+  if (props.curNode?.type === 'switch')
+    return (props.curNode?.nodeInfo?.branchInfoList || []).map(i => i.branchName)
+  if (props.curNode?.type === 'if')
+    return props.curNode?.nodeInfo?.trueBranchIdx === 1
+      ? ['true', 'false']
+      : ['false', 'true']
+
+  return []
+})
 const colCount = computed(() => getColCountByNode(props.curNode))
 const firstBranchColCount = computed(() => getColCountByBranch(bindBranch.value?.[0]))
 const lastBranchColCount = computed(() => getColCountByBranch(bindBranch.value?.[bindBranch.value.length - 1]))
@@ -92,7 +102,6 @@ const clickNode = (idx) => {
       '--var-last-branch-col-count': lastBranchColCount,
     }"
   >
-    {{ branchNameList }}
     <RenderList
       v-for="(nodeList, idx) in bindBranch"
       :key="idx"
@@ -102,6 +111,7 @@ const clickNode = (idx) => {
         'can-drop-branch': dragIdx !== null && dragIdx !== idx, // 可以防止的分支
       }"
       :branch-count="bindBranch.length"
+      :branch-name="branchNameList[idx]"
       :draggable="true"
 
       @mouseenter="() => mouseenter(idx)"

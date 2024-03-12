@@ -89,6 +89,9 @@ $node-wrapper-size: 85px; // 节点大小
   background-color: $line-color;
   margin: 0 auto;
   flex-grow: 1;
+  &.line2 {
+    min-height:calc($line-length + $line-length);
+  }
 }
 
 

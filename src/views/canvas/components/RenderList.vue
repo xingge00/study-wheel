@@ -17,6 +17,10 @@ const props = defineProps({
     type: Number,
     default: 1,
   },
+  branchName: {
+    type: String,
+    default: '',
+  },
 })
 const emits = defineEmits(['update:modelValue', 'removeBranch'])
 const attrs = useAttrs()
@@ -87,6 +91,9 @@ const dragover = (e) => {
   <div class="render-list-wrapper" v-bind="attrs">
     <template v-if="startLine">
       <SubBtn v-if="branchCount > 2" @click="emits('removeBranch')"></SubBtn>
+      <div class="branch-name" :class="{ placeholder: !branchName }">
+        {{ branchName || '未命名' }}
+      </div>
       <div class="line"></div>
       <AddNodeBtn
         :class="{ canDropFlag: dragConf.dragFlag && !dragConf.banDropNodeList.includes(nodeList) }"
@@ -112,5 +119,16 @@ const dragover = (e) => {
 </template>
 
 <style lang="scss" scoped>
-
+.branch-name {
+  width: 100%;
+  height: 16px;
+  line-height: 16px;
+  font-size: 14px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  &.placeholder{
+    color: #ccc;
+  }
+}
 </style>
