@@ -21,6 +21,8 @@ const bindBranch = computed({
   get: () => props.modelValue || [],
   set: val => emits('update:modelValue', val),
 })
+
+const branchNameList = computed(() => (props.curNode?.nodeInfo?.branchInfoList || []).map(i => i.branchName))
 const colCount = computed(() => getColCountByNode(props.curNode))
 const firstBranchColCount = computed(() => getColCountByBranch(bindBranch.value?.[0]))
 const lastBranchColCount = computed(() => getColCountByBranch(bindBranch.value?.[bindBranch.value.length - 1]))
@@ -90,6 +92,7 @@ const clickNode = (idx) => {
       '--var-last-branch-col-count': lastBranchColCount,
     }"
   >
+    {{ branchNameList }}
     <RenderList
       v-for="(nodeList, idx) in bindBranch"
       :key="idx"

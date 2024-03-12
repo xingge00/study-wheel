@@ -55,9 +55,15 @@ const genContext = () => {
 const genNodeInfo = (type) => {
   const infoMap = {
     if: {
-      nodeName: 'if', // 节点名称
-      condition: 'a>b', // 条件表达式
+      condition: '', // 条件表达式
       trueBranchIdx: 1, // true分支
+    },
+    switch: {
+      branchInfoList: [ // 分支信息
+        { branchName: '分支1', condition: '' },
+        { branchName: '分支2', condition: '' },
+      ],
+
     },
   }
   const result = infoMap[type] || {}

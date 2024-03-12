@@ -1,6 +1,6 @@
 
 <script setup>
-import { computed, inject, ref } from 'vue'
+import { computed, inject, ref, watch } from 'vue'
 import Condition from './components/Condition.vue'
 import { getParentNode } from '@/views/canvas/components/nodeConfig.js'
 
@@ -11,21 +11,40 @@ if.nodeInfo{
   condition:'a>b',//条件表达式
   firstBrachTrue:true,
 }
+switch.nodeInfo{
+  nodeName:'if',//节点名称
+  branchInfoList:[
+    {
+    branchName:'branch1',//分支名称
+    condition:'a>b',//条件表达式
+    }
+  ]
+}
  */
 const activateNode = inject('activateNode')
 
 // 当前选中的是否分支(否则是节点)
 const isActiveBranch = computed(() => Array.isArray(activateNode.value))
 
-const curActivateNode = computed(() => {
+// 当前选中的节点或分支的父节点
+const curActivateNode = ref(null)
+const curActivateBranchIdx = ref(null)
+
+watch(() => activateNode.value, (val) => {
   if (isActiveBranch.value) {
-    const { parentNode, branchIdx } = getParentNode(activateNode.value[0])
-    console.log('parentNode', parentNode)
-    return parentNode
+    const { parentNode, branchIdx } = getParentNode(activateNode.value)
+    curActivateBranchIdx.value = branchIdx
+    curActivateNode.value = parentNode
   } else {
-    return activateNode.value
+    curActivateBranchIdx.value = null
+    curActivateNode.value = activateNode.value
   }
+},
+{
+  deep: true,
+  immediate: true,
 })
+
 const nodeInfo = computed({
   get: () => curActivateNode.value?.nodeInfo || {},
   set: (val) => {
@@ -34,20 +53,24 @@ const nodeInfo = computed({
 })
 
 const formatNodeInfo = (node) => {
-  const genFieldItem = (label, field, type, conf = {
-    options: [{ label: '是', value: true }, { label: '否', value: false }],
-  }) => ({ label, field, type, conf })
+  const genFieldItem = (label, field, type, conf = {}) =>
+    ({ label, field, type, ...conf })
 
-  const { type } = node
-  switch (type) {
+  if (!node) return {}
+
+  const genRenderAttrs = ({ base = [], other = [] }) => ({
+    base: base.filter(i => i?.attrs?.length), // 没有属性时不显示
+    other: other.filter(i => i?.attrs?.length), // 没有属性时不显示
+  })
+  switch (node.type) {
     case 'if':
-      return {
+      return genRenderAttrs({
         base: [
           {
             moduleName: '基本信息',
             attrs: [
               genFieldItem('节点名称', 'nodeName', 'input'),
-              genFieldItem('判断条件', 'condition', 'input'),
+              genFieldItem('判断条件', 'condition', 'input', { required: true }),
               genFieldItem('true分支索引', 'trueBranchIdx', 'radio', {
                 options: [{ label: 1, value: 1 }, { label: 2, value: 2 }],
               }),
@@ -59,26 +82,59 @@ const formatNodeInfo = (node) => {
             attrs: [
               genFieldItem('分支名称', '', 'input', {
                 disabled: true,
+                defaultValue: `分支${curActivateBranchIdx.value + 1}`,
+              }),
+              genFieldItem('置为true分支', 'trueBranchIdx', 'switch', {
+                activeValue: curActivateBranchIdx.value === 0 ? 1 : 2,
+                inactiveValue: curActivateBranchIdx.value === 0 ? 2 : 1,
               }),
             ].filter(i => isActiveBranch.value), // 选中分支时才显示
           },
           {
             moduleName: '输入参数',
-            attrs: [
-              // { label: '节点名称', type: 'input', disabled: true, value: 'if' },
-            ],
+            attrs: [],
           },
           {
             moduleName: '输出参数',
+            attrs: [],
+          },
+        ],
+        other: [],
+      })
+
+    case 'switch':
+      return genRenderAttrs({
+        base: [
+          {
+            moduleName: '基本信息',
             attrs: [
-              // { label: '节点名称', type: 'input', disabled: true, value: 'if' },
+              genFieldItem('节点名称', 'nodeName', 'input'),
             ],
           },
-        ].filter(i => i?.attrs?.length), // 没有属性时不显示
-        other: [
-          { moduleName: '', attrs: [{ label: '', type: 'input' }] },
-        ].filter(i => i?.attrs?.length), // 没有属性时不显示
-      }
+          {
+            moduleName: '分支信息',
+            attrs: [
+              genFieldItem('分支名称', `branchInfoList.${curActivateBranchIdx.value}.branchName`, 'input'),
+              genFieldItem('判断条件', `branchInfoList.${curActivateBranchIdx.value}.condition`, 'input',
+                { required: true }),
+            ].filter(i => isActiveBranch.value), // 选中分支时才显示
+          },
+        ],
+        other: [],
+      })
+
+    case 'feat':
+      return genRenderAttrs({
+        base: [
+          {
+            moduleName: '基本信息',
+            attrs: [
+              genFieldItem('节点名称', 'nodeName', 'input'),
+            ],
+          },
+
+        ],
+      })
 
     default:
       return { base: [], other: [] }
@@ -87,7 +143,7 @@ const formatNodeInfo = (node) => {
 
 const renderAttrs = computed(() => {
   const { base, other } = formatNodeInfo(curActivateNode.value)
-  console.log(base, other)
+
   return [
     {
       label: '基础属性',
@@ -137,12 +193,20 @@ const onChange = (val, fieldStr) => {
     }
   }
 }
+
+// 公用绑定
+const commonBind = attr => ({
+  disabled: attr?.disabled,
+  modelValue: attr.field ? bindTargetField.value(attr.field) || attr.defaultValue : attr.defaultValue,
+  onInput: val => onChange(val, attr.field),
+  onChange: val => onChange(val, attr.field),
+})
 </script>
 
 <template>
   <el-tabs v-model="activeName" :stretch="true">
     <el-tab-pane v-for="(tab) in renderAttrs" :key="tab.label" :label="tab.label" :name="tab.label">
-      <el-form :model="nodeInfo">
+      <el-form :model="nodeInfo" label-width="100px">
         {{ nodeInfo }}
         <div class="tab-pane-content">
           <div v-for="(module, idx2) in tab.modules" :key="idx2" class="module-content">
@@ -151,21 +215,19 @@ const onChange = (val, fieldStr) => {
             </div>
             <div v-for="(attr, idx3) in module.attrs" :key="idx3">
               <el-form-item :label="attr.label" :rules="attr.required && [{ required: true, message: '' }]">
-                <el-input
-                  v-if="attr.type === 'input'"
-                  :disabled="attr.conf.disabled"
-                  :model-value="bindTargetField(attr.field)"
-                  @input="(val) => onChange(val, attr.field)"
-                ></el-input>
-
+                <el-input v-if="attr.type === 'input'" v-bind="commonBind(attr)"></el-input>
+                <el-switch
+                  v-else-if="attr.type === 'switch'"
+                  :key="attr"
+                  v-bind="commonBind(attr)"
+                  :active-value="attr.activeValue"
+                  :inactive-value="attr.inactiveValue"
+                ></el-switch>
                 <el-radio-group
-                  v-if="attr.type === 'radio'"
-                  :disabled="attr.conf.disabled"
-                  :model-value="bindTargetField(attr.field)"
-                  @change="(val) => onChange(val, attr.field)"
+                  v-else-if="attr.type === 'radio'" v-bind="commonBind(attr)"
                 >
                   <el-radio-button
-                    v-for="radio in attr.conf.options"
+                    v-for="radio in attr.options"
                     :key="radio.value"
                     :label="radio.label"
                     :value="radio.value"
@@ -186,7 +248,9 @@ const onChange = (val, fieldStr) => {
   padding: 0 8px;
   .module-content {
     padding: 8px 0;
-    border-bottom: 1px solid #eee;
+    &:not(:last-child) {
+      border-bottom: 1px solid #eee;
+    }
     .module-name {
       font-weight: bold;
       margin-bottom: 8px;
