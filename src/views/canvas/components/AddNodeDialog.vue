@@ -41,8 +41,8 @@ defineExpose({
     v-click-outside="close"
     class="add-node-dialog"
     :style="{
-      '--var-dialog-left': `${position.x}px`,
-      '--var-dialog-top': `${position.y}px`,
+      '--var-dialog-left': `${position.x + 15}px`,
+      '--var-dialog-top': `${position.y + 15}px`,
       '--var-dialog-size': visible ? '300px' : '0',
     }
     "

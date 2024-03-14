@@ -1,6 +1,6 @@
 
 <script setup>
-import { onBeforeUnmount, provide, ref } from 'vue'
+import { onBeforeUnmount, onMounted, provide, ref } from 'vue'
 import RenderList from './RenderList.vue'
 
 import AddNodeDialog from './AddNodeDialog.vue'
@@ -162,15 +162,52 @@ const execute = () => {
   const res = BaseNode.executeList(nodeList.value, [])
   code.value = res.context.code
 }
+
+let tempPos = [0, 0]
+const positionDist = ref([0, 0])
+const calcDist = ref([0, 0])
+const handleMouseDown = (e) => {
+  console.log('handleMouseDown')
+  tempPos = [e.screenX, e.screenY]
+  let timer = null
+  document.onmousemove = function (e) { // 鼠标移动的时候计算元素的位置
+    console.log('onmousemove')
+
+    if (timer) return
+    timer = setTimeout(() => {
+      calcDist.value = [e.screenX - tempPos[0], e.screenY - tempPos[1]]
+      timer = null
+    }, 1000 / 80)
+  }
+}
+const handleMouseUp = () => {
+  const [x, y] = positionDist.value
+  const [xc, yc] = calcDist.value
+  positionDist.value = [x + xc, y + yc]
+  calcDist.value = [0, 0]
+  document.onmousemove = document.onmouseup = null
+}
+onMounted(() => {
+  // 监听页面的mouseleave事件，当鼠标移出浏览器页面可用区域 并 松开按键时，停止拖动
+  document.addEventListener('mouseleave', (e) => {
+    handleMouseUp()
+  })
+})
 </script>
 
 <template>
   <div
     id="canvas-main"
     class="canvas-main"
+    :style="{
+      '--var-position-x': `${positionDist[0] + calcDist[0]}px`,
+      '--var-position-y': `${positionDist[1] + calcDist[1]}px`,
+    }"
     @click.capture="activateNode = null"
+    @mousedown="handleMouseDown"
+    @mouseup="handleMouseUp"
   >
-    <div>
+    <div class="left-top-wrapper">
       <el-button @click="shortcutKey">
         快捷建：{{ shortcutKeyFlag ? '开启' : '关闭' }}
       </el-button>
@@ -181,8 +218,10 @@ const execute = () => {
         执行
       </el-button>
     </div>
-    <RenderList v-model="nodeList" :start-line="false"></RenderList>
-    <div style="display: inline-block;vertical-align: top;">
+    <div class="canvas-node-container">
+      <RenderList v-model="nodeList" :start-line="false"></RenderList>
+    </div>
+    <!-- <div style="display: inline-block;vertical-align: top;">
       shearPlate: {{ shearPlate }} <br />
       ParentNode: {{ getParentNode()?.parentNode || 'null' }} <br />
       activateNode: {{ activateNode }} <br />
@@ -190,7 +229,7 @@ const execute = () => {
       code<br />
       {{ code }}
     </pre>
-    </div>
+    </div> -->
   </div>
   <!-- 添加节点弹窗 -->
   <AddNodeDialog
@@ -209,14 +248,26 @@ const execute = () => {
 
 <style lang="scss" scoped>
 .canvas-main {
-  padding: 20px;
-  box-sizing: border-box;
+  font-size: 12px;
   width:100%;
   height: 100%;
+  padding: 40px 20px;
+  box-sizing: border-box;
   background-image: radial-gradient(circle,#e5e9e9 15%,#f8f9f9 10%);
   background-position: center center;
   background-size: 20px 20px;
   position: relative; // 不要删除 用于获取相对画布定位
-  overflow: auto;
+  overflow: hidden;
+  .left-top-wrapper {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+  .canvas-node-container {
+    display: inline-block;
+    position: relative;
+    top: var(--var-position-y);
+    left: var(--var-position-x);
+  }
 }
 </style>

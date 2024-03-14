@@ -37,6 +37,7 @@ const mouseleave = () => hoverStack.value.shift()
 
 // 拖动抓取
 const dragstart = () => {
+  console.log('dragstart')
   dragConf.value.customDragData = {
     node: node.value,
     curBranch: curBranch.value,
