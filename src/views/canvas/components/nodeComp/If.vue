@@ -17,6 +17,10 @@ const emits = defineEmits(['update:modelValue'])
 const bindBranch = computed({
   get: () => props.modelValue.branchList,
   set: val => emits('update:modelValue', { ...props.modelValue, branchList: val }),
+  // set: (val) => {
+  //   // eslint-disable-next-line vue/no-mutating-props
+  //   props.modelValue.branchList = val
+  // },
 })
 const attrs = useAttrs()
 
@@ -36,7 +40,9 @@ const colCount = computed(() => getColCount(props.modelValue))
   <div class="node-wrapper" v-bind="attrs">
     <slot></slot>
     <div class="c-circle c-if">
-      if
+      <slot name="showName">
+        if
+      </slot>
     </div>
   </div>
   <BranchRender

@@ -1,6 +1,6 @@
 
 <script setup>
-import { computed, inject, ref } from 'vue'
+import { computed, inject, ref, watch } from 'vue'
 import RenderList from './RenderList.vue'
 import AddNodeBtn from './AddNodeBtn.vue'
 import { getColCountByBranch, getColCountByNode } from './utils.js'
@@ -23,13 +23,10 @@ const bindBranch = computed({
 })
 
 const branchNameList = computed(() => {
-  console.log(props.curNode?.nodeInfo)
   if (props.curNode?.type === 'switch')
-    return (props.curNode?.nodeInfo?.branchInfoList || []).map(i => i.branchName)
+    return (props.curNode?.nodeInfo?.branchInfoList || []).map(i => i?.branchName)
   if (props.curNode?.type === 'if')
-    return props.curNode?.nodeInfo?.trueBranchIdx === 1
-      ? ['true', 'false']
-      : ['false', 'true']
+    return (props.curNode?.nodeInfo?.branchInfoList || []).map(i => i.branchName)
 
   return []
 })
@@ -58,21 +55,30 @@ const dragover = (e) => {
   if (dragIdx.value === null) return
   e.preventDefault()
 }
+
+// 更新分支信息
+const updateBranch = (branchList, oldIdx, newIdx) => {
+  let left = Math.min(oldIdx, newIdx)
+  let right = Math.max(oldIdx, newIdx)
+  const temp = branchList[oldIdx]
+
+  while (left < right) {
+    if (oldIdx < newIdx)
+      branchList[left] = branchList[++left]
+    else
+      branchList[right] = branchList[--right]
+
+    if (left === right) branchList[left] = temp
+  }
+}
+
 const drop = (idx) => {
   if (dragIdx.value === idx || dragIdx.value === null) return
 
-  let left = Math.min(dragIdx.value, idx)
-  let right = Math.max(dragIdx.value, idx)
-  const temp = bindBranch.value[dragIdx.value]
-
-  while (left < right) {
-    if (dragIdx.value < idx)
-      bindBranch.value[left] = bindBranch.value[++left]
-    else
-      bindBranch.value[right] = bindBranch.value[--right]
-
-    if (left === right) bindBranch.value[left] = temp
-  }
+  // 更新画布节点
+  updateBranch(bindBranch.value || [], dragIdx.value, idx)
+  // 更新分支信息
+  updateBranch(props.curNode?.nodeInfo?.branchInfoList || [], dragIdx.value, idx)
 
   // const [source] = bindBranch.value.splice(dragIdx.value, 1)
   // bindBranch.value.splice(idx, 0, source)

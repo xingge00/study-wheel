@@ -105,6 +105,9 @@ const clickNode = () => {
     @click.stop="clickNode"
   >
     <component :is="nodeComponent" v-model="node">
+      <template #showName>
+        {{ node.nodeInfo.nodeName || node.type }}
+      </template>
       <SubBtn @toSub="emits('subNode')"></SubBtn>
     </component>
   </div>

@@ -1,6 +1,6 @@
 
 <script setup>
-import { computed, inject, ref, watch } from 'vue'
+import { computed, inject, markRaw, ref, watch } from 'vue'
 import Condition from './components/Condition.vue'
 import { getParentNode } from '@/views/canvas/components/nodeConfig.js'
 
@@ -9,14 +9,19 @@ import { getParentNode } from '@/views/canvas/components/nodeConfig.js'
 if.nodeInfo{
   nodeName:'if',//节点名称
   condition:'a>b',//条件表达式
-  trueBranchIdx:1|2,
+  branchInfoList:[
+    {
+      branchName:'branch1',//分支名称
+      type:true // 分支类型
+    }
+  ]
 }
 switch.nodeInfo{
   nodeName:'if',//节点名称
   branchInfoList:[
     {
-    branchName:'branch1',//分支名称
-    condition:'a>b',//条件表达式
+      branchName:'branch1',//分支名称
+      condition:'a>b',//条件表达式
     }
   ]
 }
@@ -53,106 +58,58 @@ const nodeInfo = computed({
 })
 
 const formatNodeInfo = (node) => {
-  const genFieldItem = (label, field, type, conf = {}) =>
-    ({ label, field, type, ...conf })
-
   if (!node) return {}
+  const { type: nodeType } = node
 
-  const genRenderAttrs = ({ base = [], other = [] }) => ({
-    base: base.filter(i => i?.attrs?.length), // 没有属性时不显示
-    other: other.filter(i => i?.attrs?.length), // 没有属性时不显示
-  })
-  switch (node.type) {
-    case 'if':
-      return genRenderAttrs({
-        base: [
-          {
-            moduleName: '基本信息',
-            attrs: [
-              genFieldItem('节点名称', 'nodeName', 'input'),
-              genFieldItem('判断条件', 'condition', 'input', { required: true }),
-              genFieldItem('true分支索引', 'trueBranchIdx', 'radio', {
-                options: [{ label: 1, value: 1 }, { label: 2, value: 2 }],
-              }),
+  const genFieldItem = (filterType, label, field, type, conf = {}) =>
+    filterType && filterType !== nodeType ? false : ({ label, field, type, ...conf })
 
-            ],
-          },
-          {
-            moduleName: '分支信息',
-            attrs: [
-              genFieldItem('分支名称', '', 'input', {
-                disabled: true,
-                defaultValue: `分支${curActivateBranchIdx.value + 1}`,
-              }),
-              genFieldItem('置为true分支', 'trueBranchIdx', 'switch', {
-                activeValue: curActivateBranchIdx.value === 0 ? 1 : 2,
-                inactiveValue: curActivateBranchIdx.value === 0 ? 2 : 1,
-              }),
-            ].filter(i => isActiveBranch.value), // 选中分支时才显示
-          },
-          {
-            moduleName: '输入参数',
-            attrs: [],
-          },
-          {
-            moduleName: '输出参数',
-            attrs: [],
-          },
-        ],
-        other: [],
-      })
+  return {
+    base: [
+      {
+        moduleName: '基本信息',
+        attrs: [
+          genFieldItem(null, '节点类型', 'type', 'input', { disabled: true }),
+          genFieldItem(null, '节点名称', 'nodeName', 'input'),
+          genFieldItem('if', '判断条件', 'condition', 'input', { required: true }),
+        ].filter(Boolean),
+      },
+      {
+        moduleName: '分支信息',
+        attrs: [
+          genFieldItem('if', '分支名称', `branchInfoList.${curActivateBranchIdx.value}.branchName`, 'input', {
+            disabled: false,
+          }),
+          genFieldItem('if', '设为true分支', 'branchInfoList', 'custom', {
+            component: markRaw(Condition),
+            nodeInfo,
+            curActivateBranchIdx: curActivateBranchIdx.value,
+          }),
 
-    case 'switch':
-      return genRenderAttrs({
-        base: [
-          {
-            moduleName: '基本信息',
-            attrs: [
-              genFieldItem('节点名称', 'nodeName', 'input'),
-            ],
-          },
-          {
-            moduleName: '分支信息',
-            attrs: [
-              genFieldItem('分支名称', `branchInfoList.${curActivateBranchIdx.value}.branchName`, 'input'),
-              genFieldItem('判断条件', `branchInfoList.${curActivateBranchIdx.value}.condition`, 'input',
-                { required: true }),
-            ].filter(i => isActiveBranch.value), // 选中分支时才显示
-          },
-        ],
-        other: [],
-      })
+          genFieldItem('switch', '分支名称', `branchInfoList.${curActivateBranchIdx.value}.branchName`, 'input'),
+          genFieldItem('switch', '判断条件', `branchInfoList.${curActivateBranchIdx.value}.condition`, 'input',
+            { required: true }),
 
-    case 'feat':
-      return genRenderAttrs({
-        base: [
-          {
-            moduleName: '基本信息',
-            attrs: [
-              genFieldItem('节点名称', 'nodeName', 'input'),
-            ],
-          },
-
-        ],
-      })
-
-    default:
-      return { base: [], other: [] }
+        ].filter(Boolean).filter(i => isActiveBranch.value), // 选中分支时才显示
+      },
+      {
+        moduleName: '输入参数',
+        attrs: [].filter(Boolean),
+      },
+      {
+        moduleName: '输出参数',
+        attrs: [].filter(Boolean),
+      },
+    ].filter(i => i?.attrs?.length), // 没有属性时不显示,
+    other: [].filter(i => i?.attrs?.length), // 没有属性时不显示,
   }
 }
 
 const renderAttrs = computed(() => {
   const { base, other } = formatNodeInfo(curActivateNode.value)
-
   return [
-    {
-      label: '基础属性',
-      modules: base,
-    },
-    {
-      label: '其他属性',
-      modules: other,
-    },
+    { label: '基础属性', modules: base },
+    { label: '其他属性', modules: other },
   ]
 })
 
@@ -234,6 +191,12 @@ const commonBind = attr => ({
                   >
                   </el-radio-button>
                 </el-radio-group>
+                <component
+                  :is="attr.component"
+                  v-else-if="attr.type === 'custom'"
+                  v-bind="commonBind(attr)"
+                  :attr="attr"
+                ></component>
               </el-form-item>
             </div>
           </div>

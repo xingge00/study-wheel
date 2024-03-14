@@ -1,8 +1,7 @@
 
 <script setup>
-import { computed, inject, ref, watch } from 'vue'
+import { inject, ref, watch } from 'vue'
 import { ClickOutside as vClickOutside } from 'element-plus'
-import BranchInfo from './BranchInfo.vue'
 import NodeInfo from './NodeInfo.vue'
 
 // 面板宽度

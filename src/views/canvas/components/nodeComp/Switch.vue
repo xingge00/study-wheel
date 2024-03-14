@@ -18,13 +18,18 @@ const bindBranch = computed({
   get: () => props.modelValue.branchList || [],
   set: val => emits('update:modelValue', { ...props.modelValue, branchList: val }),
 })
+
 const attrs = useAttrs()
 const addBranch = () => {
-  bindBranch.value.push([])
+  const idx = bindBranch.value.push([])
+  // eslint-disable-next-line vue/no-mutating-props
+  props.modelValue.nodeInfo.branchInfoList[idx] = {}
 }
 
 const removeBranch = (idx) => {
   bindBranch.value.splice(idx, 1)
+  // eslint-disable-next-line vue/no-mutating-props
+  props.modelValue.nodeInfo.branchInfoList.splice(idx, 1)
 }
 </script>
 
@@ -32,7 +37,9 @@ const removeBranch = (idx) => {
   <div class="node-wrapper" v-bind="attrs">
     <slot></slot>
     <div class="c-circle c-switch">
-      switch
+      <slot name="showName">
+        switch
+      </slot>
     </div>
   </div>
   <BranchRender

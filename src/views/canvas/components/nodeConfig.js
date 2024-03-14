@@ -52,22 +52,28 @@ const genContext = () => {
   }
 }
 
-const genNodeInfo = (type) => {
+const genNodeInfo = ({ type, branchList }) => {
   const infoMap = {
     if: {
       condition: '', // 条件表达式
-      trueBranchIdx: 1, // true分支
+      branchInfoList: [ // 分支信息
+        { branchName: '分支1', type: true },
+        { branchName: '分支2', type: false },
+      ],
     },
     switch: {
-      branchInfoList: [ // 分支信息
-        { branchName: '分支1', condition: '' },
-        { branchName: '分支2', condition: '' },
-      ],
+      // 分支信息
+      branchInfoList: (branchList || []).map((i, idx) =>
+        ({ branchName: `分支${idx}`, condition: '' }),
+      ),
 
     },
   }
+
   const result = infoMap[type] || {}
+  result.type = type
   result.nodeName = type
+
   return result
 }
 
@@ -123,24 +129,20 @@ export class BaseNode {
       })
     }
 
-    const defaultNodeInfo = genNodeInfo(this.type)
+    const defaultNodeInfo = genNodeInfo(this)
     // 节点原来的值覆盖默认值
     Object.assign(defaultNodeInfo, nodeInfo)
 
-    Object.defineProperty(this, 'nodeInfo', {
-      configurable: false,
-      get() {
-        return new Proxy(defaultNodeInfo, {
-          get(target, key, receiver) {
-            return Reflect.get(target, key, receiver)
-          },
-          set(target, key, newValue, receiver) {
-            console.log('修改了', target, '的', key, '为', newValue)
-            return Reflect.set(target, key, newValue, receiver)
-          },
-        })
+    const proxy = new Proxy(defaultNodeInfo, {
+      get(target, key, receiver) {
+        return Reflect.get(target, key, receiver)
+      },
+      set(target, key, newValue, receiver) {
+        console.log('修改了', target, '的', key, '为', newValue)
+        return Reflect.set(target, key, newValue, receiver)
       },
     })
+    this.nodeInfo = proxy
   }
 
   static copyBranchList(branchList) {
@@ -150,7 +152,10 @@ export class BaseNode {
   }
 
   copySelf() {
-    return new BaseNode(this.type, { branchList: BaseNode.copyBranchList(this.branchList) })
+    return new BaseNode(this.type, {
+      branchList: BaseNode.copyBranchList(this.branchList),
+      nodeInfo: JSON.parse(JSON.stringify(this.nodeInfo)),
+    })
   }
 
   static executeNode(node, params = [], context) {
@@ -158,7 +163,11 @@ export class BaseNode {
     const { type, branchList } = node
 
     let subRes
-    if (['if', 'switch'].includes(type)) {
+    if (type === 'if') {
+      subRes = BaseNode.executeList(branchList[0], params)
+    }
+
+    if (type === 'switch') {
       // 暂时执行第一条分支
       subRes = BaseNode.executeList(branchList[0], params)
     }

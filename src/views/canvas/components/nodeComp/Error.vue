@@ -7,7 +7,9 @@
   <div class="node-wrapper">
     <slot></slot>
     <div class="c-circle c-other">
-      Error
+      <slot name="showName">
+        error
+      </slot>
     </div>
   </div>
 </template>

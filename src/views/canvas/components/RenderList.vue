@@ -28,6 +28,8 @@ const nodeList = computed({
   get: () => props.modelValue,
   set: val => emits('update:modelValue', val),
 })
+
+const branchNameFlag = inject('branchNameFlag')
 const dragConf = inject('dragConf')
 const hoverStack = inject('hoverStack')
 
@@ -91,7 +93,7 @@ const dragover = (e) => {
   <div class="render-list-wrapper" v-bind="attrs">
     <template v-if="startLine">
       <SubBtn v-if="branchCount > 2" @click="emits('removeBranch')"></SubBtn>
-      <div class="branch-name" :class="{ placeholder: !branchName }">
+      <div v-if="branchNameFlag" class="branch-name" :class="{ placeholder: !branchName }">
         {{ branchName || '未命名' }}
       </div>
       <div class="line"></div>

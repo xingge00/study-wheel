@@ -6,7 +6,9 @@
 <template>
   <div class="node-wrapper">
     <div class="c-circle c-end">
-      end
+      <slot name="showName">
+        end
+      </slot>
     </div>
   </div>
 </template>
