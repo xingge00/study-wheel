@@ -5,8 +5,8 @@ import RenderList from './RenderList.vue'
 
 import AddNodeDialog from './AddNodeDialog.vue'
 import InfoPanel from './InfoPanel'
+import useCanvasDrag from './useCanvasDrag'
 import { BaseNode, MIN_BRANCH_COUNT, getParentNode } from '@/views/canvas/components/nodeConfig.js'
-
 const nodeList = ref([
   new BaseNode('start'),
   new BaseNode('feat'),
@@ -163,36 +163,7 @@ const execute = () => {
   code.value = res.context.code
 }
 
-let tempPos = [0, 0]
-const positionDist = ref([0, 0])
-const calcDist = ref([0, 0])
-const handleMouseDown = (e) => {
-  console.log('handleMouseDown')
-  tempPos = [e.screenX, e.screenY]
-  let timer = null
-  document.onmousemove = function (e) { // 鼠标移动的时候计算元素的位置
-    console.log('onmousemove')
-
-    if (timer) return
-    timer = setTimeout(() => {
-      calcDist.value = [e.screenX - tempPos[0], e.screenY - tempPos[1]]
-      timer = null
-    }, 1000 / 80)
-  }
-}
-const handleMouseUp = () => {
-  const [x, y] = positionDist.value
-  const [xc, yc] = calcDist.value
-  positionDist.value = [x + xc, y + yc]
-  calcDist.value = [0, 0]
-  document.onmousemove = document.onmouseup = null
-}
-onMounted(() => {
-  // 监听页面的mouseleave事件，当鼠标移出浏览器页面可用区域 并 松开按键时，停止拖动
-  document.addEventListener('mouseleave', (e) => {
-    handleMouseUp()
-  })
-})
+const { handleMouseDown, handleMouseUp, positionDist, calcDist } = useCanvasDrag()
 </script>
 
 <template>
@@ -206,6 +177,7 @@ onMounted(() => {
     @click.capture="activateNode = null"
     @mousedown="handleMouseDown"
     @mouseup="handleMouseUp"
+    @mousewheel="onMouseWheel"
   >
     <div class="left-top-wrapper">
       <el-button @click="shortcutKey">
