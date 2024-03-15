@@ -163,7 +163,7 @@ const execute = () => {
   code.value = res.context.code
 }
 
-const { handleMouseDown, handleMouseUp, positionDist, calcDist } = useCanvasDrag()
+const { handleMouseDown, handleMouseUp, positionDist, calcDist, onMouseWheel, scale } = useCanvasDrag()
 </script>
 
 <template>
@@ -173,6 +173,7 @@ const { handleMouseDown, handleMouseUp, positionDist, calcDist } = useCanvasDrag
     :style="{
       '--var-position-x': `${positionDist[0] + calcDist[0]}px`,
       '--var-position-y': `${positionDist[1] + calcDist[1]}px`,
+      '--var-position-scale': scale,
     }"
     @click.capture="activateNode = null"
     @mousedown="handleMouseDown"
@@ -234,12 +235,16 @@ const { handleMouseDown, handleMouseUp, positionDist, calcDist } = useCanvasDrag
     position: absolute;
     left: 0;
     top: 0;
+    z-index: 10;
   }
   .canvas-node-container {
+    z-index: 1;
     display: inline-block;
     position: relative;
     top: var(--var-position-y);
     left: var(--var-position-x);
+    transform: scale(var(--var-position-scale));
+    transform-origin: 50% 50% 0px;
   }
 }
 </style>
