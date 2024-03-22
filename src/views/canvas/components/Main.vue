@@ -2,11 +2,13 @@
 <script setup>
 import { onBeforeUnmount, onMounted, provide, ref } from 'vue'
 import RenderList from './RenderList.vue'
-
 import AddNodeDialog from './AddNodeDialog.vue'
 import InfoPanel from './InfoPanel'
+import CodePanel from './CodePanel'
 import useCanvasDrag from './useCanvasDrag'
+import { generateCode } from './function.js'
 import { BaseNode, MIN_BRANCH_COUNT, getParentNode } from '@/views/canvas/components/nodeConfig.js'
+
 const nodeList = ref([
   new BaseNode('start'),
   new BaseNode('feat'),
@@ -158,9 +160,17 @@ provide('branchNameFlag', branchNameFlag)
 
 const code = ref('')
 const execute = () => {
-  console.log('BaseNode.executeList(nodeList.value, [])', BaseNode.executeList(nodeList.value, []))
-  const res = BaseNode.executeList(nodeList.value, [])
-  code.value = res.context.code
+  // console.log('BaseNode.executeList(nodeList.value, [])', BaseNode.executeList(nodeList.value, []))
+  // const res = BaseNode.executeList(nodeList.value, [])
+  // code.value = res.context.code
+}
+
+const codePanelRef = ref(null)
+const generate = () => {
+  const temp = generateCode(nodeList.value)
+  console.log('generateCode', temp)
+  code.value = temp
+  codePanelRef.value.show()
 }
 
 const { handleMouseDown, handleMouseUp, positionDist, calcDist, onMouseWheel, scale } = useCanvasDrag()
@@ -190,6 +200,9 @@ const { handleMouseDown, handleMouseUp, positionDist, calcDist, onMouseWheel, sc
       <el-button @click="execute">
         执行
       </el-button>
+      <el-button @click="generate">
+        生成代码
+      </el-button>
     </div>
     <div class="canvas-node-container">
       <RenderList v-model="nodeList" :start-line="false"></RenderList>
@@ -210,6 +223,9 @@ const { handleMouseDown, handleMouseUp, positionDist, calcDist, onMouseWheel, sc
   ></AddNodeDialog>
   <!-- 节点信息面板 -->
   <InfoPanel></InfoPanel>
+  <CodePanel ref="codePanelRef">
+    <pre>{{ code }}</pre>
+  </CodePanel>
   <div
     v-if="shortcutKeyFlag"
     v-mousetrap="['mod+c', 'mod+v', 'mod+x']"

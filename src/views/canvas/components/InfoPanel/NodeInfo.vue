@@ -72,6 +72,7 @@ const formatNodeInfo = (node) => {
           genFieldItem(null, '节点类型', 'type', 'input', { disabled: true }),
           genFieldItem(null, '节点名称', 'nodeName', 'input'),
           genFieldItem('if', '判断条件', 'condition', 'input', { required: true }),
+          genFieldItem('switch', '判断变量', 'condition', 'input', { required: true }),
         ].filter(Boolean),
       },
       {
