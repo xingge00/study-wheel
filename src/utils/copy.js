@@ -1,5 +1,5 @@
-import 'element-plus/es/components/message/style/css.mjs'
-import { ElMessage } from 'element-plus'
+// import 'element-plus/es/components/message/style/css'
+// import { ElMessage } from 'element-plus'
 // eslint-disable-next-line import/no-mutable-exports
 export let copyToClipboard = (text) => {
   const execCommandCopy = (text) => {
@@ -16,7 +16,7 @@ export let copyToClipboard = (text) => {
       input.select()
       document.execCommand('copy')
       document.body.removeChild(input)
-      ElMessage.success('复制成功!')
+      // ElMessage.success('复制成功!')
     } catch (e) {
       console.error('自动复制被禁用，请手动选取复制')
     }
@@ -29,7 +29,7 @@ export let copyToClipboard = (text) => {
     try {
       navigator.clipboard.writeText(text).then(
         () => {
-          ElMessage.success('复制成功')
+          // ElMessage.success('复制成功')
         },
         () => {
           execCommandCopy(text)
