@@ -168,9 +168,9 @@ const execute = () => {
 const codePanelRef = ref(null)
 const generate = () => {
   const temp = generateCode(nodeList.value)
-  console.log('generateCode', temp)
+  // console.log('generateCode', temp)
   code.value = temp
-  codePanelRef.value.show()
+  codePanelRef.value.show(code.value)
 }
 
 const { handleMouseDown, handleMouseUp, positionDist, calcDist, onMouseWheel, scale } = useCanvasDrag()
@@ -220,12 +220,11 @@ const { handleMouseDown, handleMouseUp, positionDist, calcDist, onMouseWheel, sc
   <!-- 添加节点弹窗 -->
   <AddNodeDialog
     ref="addNodeDialogRef"
+    :scale="scale"
   ></AddNodeDialog>
   <!-- 节点信息面板 -->
   <InfoPanel></InfoPanel>
-  <CodePanel ref="codePanelRef">
-    <pre>{{ code }}</pre>
-  </CodePanel>
+  <CodePanel ref="codePanelRef" />
   <div
     v-if="shortcutKeyFlag"
     v-mousetrap="['mod+c', 'mod+v', 'mod+x']"
@@ -260,7 +259,7 @@ const { handleMouseDown, handleMouseUp, positionDist, calcDist, onMouseWheel, sc
     top: var(--var-position-y);
     left: var(--var-position-x);
     transform: scale(var(--var-position-scale));
-    transform-origin: 50% 50% 0px;
+    // transform-origin: 50% 50% 0px;
   }
 }
 </style>

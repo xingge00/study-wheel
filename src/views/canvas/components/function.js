@@ -1,8 +1,10 @@
 export const generateCode = (nodeList, deep = 0) => {
   console.log('nodeList', nodeList)
+
+  const SPLIT_STR = '\t'
   // 缩进
-  const indent = ''.padStart(deep * 2, '\0')
-  const indentPlus = `\0\0${indent}`
+  const indent = ''.padStart(deep, SPLIT_STR)
+  const indentPlus = `${SPLIT_STR}${indent}`
 
   const doMap = {
     start: () => `${indent}\n`,

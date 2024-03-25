@@ -65,7 +65,7 @@ const genNodeInfo = ({ type, branchList }) => {
       // 分支信息
       condition: '',
       branchInfoList: (branchList || []).map((i, idx) =>
-        ({ branchName: `分支${idx}`, condition: '' }),
+        ({ branchName: `分支${idx + 1}`, condition: '' }),
       ),
 
     },

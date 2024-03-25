@@ -2,18 +2,24 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { ClickOutside as vClickOutside } from 'element-plus'
+import { copyToClipboard } from '@/utils/copy.js'
 
 // 面板宽度
 const PANEL_WIDTH = '500px'
 
 const visible = ref(false)
-
-const show = () => {
+const code = ref('')
+const show = (text) => {
   visible.value = true
+  code.value = text
 }
 
 const close = () => {
   visible.value = false
+}
+
+const copy = (text) => {
+  copyToClipboard(text)
 }
 
 defineExpose({
@@ -31,7 +37,18 @@ defineExpose({
     }"
     class="custom-drawer"
   >
-    <slot></slot>
+    <el-button link type="primary" @click="() => copy(code)">
+      复制代码
+    </el-button>
+    <highlightjs
+      style="height:100%;overflow: auto;"
+      language="js"
+      :code="code"
+    />
+
+    <pre>
+      {{ code }}
+    </pre>
   </div>
 </template>
 

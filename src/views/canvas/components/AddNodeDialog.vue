@@ -3,6 +3,10 @@
 import { ref } from 'vue'
 import { ClickOutside as vClickOutside } from 'element-plus'
 import nodeConfig from './nodeConfig'
+
+const props = defineProps({
+  scale: { type: Number, default: 1 },
+})
 const position = ref({ x: 1, y: 1 })
 const visible = ref(false)
 let callBack
@@ -44,9 +48,11 @@ defineExpose({
       '--var-dialog-left': `${position.x + 15}px`,
       '--var-dialog-top': `${position.y + 15}px`,
       '--var-dialog-size': visible ? '300px' : '0',
+      '--var-position-scale': scale,
     }
     "
   >
+    {{ scale }}
     <div class="select-node-wrapper">
       <component
         :is="node.component"
@@ -61,6 +67,8 @@ defineExpose({
 
 <style lang="scss" scoped>
 .add-node-dialog {
+  transform: scale(var(--var-position-scale));
+  transform-origin: 50% 50% 0px;
   position: absolute;
   width: var(--var-dialog-size);
   height: var(--var-dialog-size);
