@@ -1,1 +1,0 @@
-import{u as o}from"./base-98489d78.js";import{r,v as u}from"./index-33795f6e.js";const t=r(0),d=()=>{const e=o("zIndex",2e3),n=u(()=>e.value+t.value);return{initialZIndex:e,currentZIndex:n,nextZIndex:()=>(t.value++,n.value)}};export{d as u};
