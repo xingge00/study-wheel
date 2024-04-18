@@ -1,6 +1,6 @@
 
 <script setup lang="jsx">
-import { nextTick, ref } from 'vue'
+import { nextTick, ref, watch } from 'vue'
 import RightBar from './components/rightBar.vue'
 import MyTable from '@/package/table/index'
 
@@ -64,6 +64,9 @@ const tableColums = ref([
   },
 ])
 
+watch(() => tableColums.value, () => {
+  console.log('tableColums', tableColums.value)
+})
 const rightBarRef = ref(null)
 const renderFlag = ref(true)
 const reRender = async (val) => {

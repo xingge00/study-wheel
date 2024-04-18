@@ -1,5 +1,5 @@
 <script setup lang="jsx">
-import { defineExpose, ref, unref } from 'vue'
+import { ref } from 'vue'
 import { Minus, Plus } from '@element-plus/icons-vue'
 import MyTable from '@/package/table/index'
 const emit = defineEmits(['reRender'])
@@ -8,17 +8,22 @@ const tableData = ref([
   {
     prop: 'field1',
     label: '字段1',
-    width: '100px',
+    width: '100',
   },
   {
     prop: 'field3',
     label: 'label',
-    width: '100px',
+    width: '100',
   },
   {
     prop: 'field2',
     label: 'field2',
-    width: '100px',
+    width: '100',
+  },
+  {
+    prop: 'field2',
+    label: 'field2',
+    width: '100',
   },
 ])
 const addItem = (parent = null) => {
@@ -69,6 +74,7 @@ const tableColums = [
 
 const reRender = () => {
   console.log('点击了重新渲染')
+  console.log(JSON.parse(JSON.stringify(tableData.value)))
   emit('reRender', JSON.parse(JSON.stringify(tableData.value)))
 }
 </script>
